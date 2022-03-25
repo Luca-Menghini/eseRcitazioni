@@ -1,0 +1,483 @@
+---
+title: 'Didattica integRativa'
+subtitle: 'EseRcitazioni pRatiche con il software R'
+author: |
+ |
+ | dott. Luca Menghini Ph.D. \fontsize{9pt}{7.2}\selectfont
+ |
+ | Assegnista di ricerca, Dipartimento di Psicologia, 
+ | Università degli Studi di Bologna
+ |
+ | luca.menghini3@unibo.it
+ |
+ |
+ | ***
+ |
+ | **Analisi dei dati in ambito di comunità**
+ |
+ | Corso di laurea magistrale in Psicologia di comunità, della promozione del benessere e del cambiamento sociale
+ |
+ | Università degli Studi di Padova
+ | Anno Accademico 2021 - 2022
+ |
+ | ![](logo.PNG){width=1.3in} \fontsize{8pt}{7.2}\selectfont 
+ |
+output:
+  beamer_presentation:
+    fonttheme: serif
+    theme: Singapore
+    slide_level: 2
+    includes:
+      in_header: mystyle.tex
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE,tidy.opts = list(width.cutoff=80))
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = NA
+)
+library(Cairo)
+
+```
+
+## Mi presento
+
+\fontsize{6.5pt}{12}\selectfont
+
+-   **2014: Triennale in Scienze Psicologiche Sociali e del Lavoro** @uniPD \newline \fontsize{5.5pt}{12}\selectfont "*Biofeedback training per la gestione dello stress nei contesti organizzativi*" \fontsize{6.5pt}{12}\selectfont
+
+-   **2016: Magistrale in Psicologia Sociale, del Lavoro e della Com.** @uniPD \newline \fontsize{5.5pt}{12}\selectfont "*Un Protocollo di Assessment Psicofisiologico per la Valutazione del Rischio Stress lavoro-correlato*" \fontsize{6.5pt}{12}\selectfont
+
+-   **2017: Tirocinio post-laurem** presso **Inside Performance** (stress management & biofeedback in contesti organizzativi e sportivi) + **Laboratorio di psicofisiologia** @uniPD (processamento dati e accuratezza sensori actigrafici) &leftarrow; ![](img/R.PNG){ width=3% }
+
+-   **2017-2021: Dottorato in Scienze Psicologiche** @uniPD \newline \fontsize{5.5pt}{12}\selectfont "*Workplace stress in real time: Towards the psychophysiological assessment of stressors and strain under ecological conditions*" \fontsize{6.5pt}{12}\selectfont
+
+-   **2020: Esperienza di ricerca all'estero** @SRI International (CA, USA) \newline \fontsize{5.5pt}{12}\selectfont Accuratezza e uso Sleep Consumer Technology, Relazioni giornaliere tra sonno e stress \fontsize{6.5pt}{12}\selectfont
+
+-   **2021: Assegno di ricerca** @uniBO \newline \fontsize{5.5pt}{12}\selectfont "*State workaholism as a predictor of daily fluctuations in blood pressure, emotional exhaustion, and sleep quality*"
+
+## Obiettivi delle eseRcitazioni
+
+\fontsize{9pt}{12}\selectfont
+
+-   Acquisire competenze di base nell'uso del software R
+
+-   Consolidare le conoscenze apprese nel corso
+
+-   Implementare le tecniche analitiche apprese durante il corso utilizzando il software R su dataset reali
+
+-   Svolgere insieme gli esercizi propedeutici all'esame
+
+## Outline
+
+\fontsize{9pt}{12}\selectfont
+
+- **Giorno 1**: Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e i comandi di base per caricare un dataset e calcolare le statistiche descrittive
+
+- **Giorno 2**: ..
+
+- ...
+
+# Giorno 1
+
+## Il linguaggio R
+
+```{r , echo = FALSE, out.width = "70px",fig.align="center"}
+knitr::include_graphics("img/R.PNG")
+```
+
+\fontsize{7.5pt}{12}\selectfont
+- R è un linguaggio e un ambiente di programmazione per il **calcolo statistico** e la **visualizzazione grafica** dei dati
+
+- basato sul 'linguaggio S' (Becker & Chambers, 1984), usato per creare il software S-Plus e poi R, creato da Ross Ihaka e Robert Gentleman, nel 1996
+
+- oggi sviluppato da un gruppo di ricerca internazionale (*R Core Team*), che aggiorna periodicamente (ogni anno) il programma di base (*Base R*)
+
+- progressiva ed esponenziale aggiunta di nuovi pacchetti (*packages*) che ne estendono le funzionalità
+
+## Il linguaggio R
+
+```{r , echo = FALSE, out.width = "70px",fig.align="center"}
+knitr::include_graphics("img/R.PNG")
+```
+
+\fontsize{7.5pt}{12}\selectfont
+- ampia varietà di tecniche statistiche (es. modelli lineari e non lineari) e grafiche (es. pacchetto **[ggplot2 - link a lezione dedicata](https://elearning.unipd.it/scuolapsicologia/mod/page/view.php?id=150311)**) 
+
+- pensato per essere **semplice** ma al contempo in grado di generare **output di alta qualità** (grafici, tabelle e report con equazioni e simboli matematici, ecc.); funzioni di default ottimizzate + possibilità di avere il **pieno controllo**
+
+- **software gratuito** (GNU General Public License), **open source** (ogni funzione è documentata e visibile in dettaglio) che funziona su tutti i **principali sistemi operativi**: Windows, MacOS, e UNIX (es. Linux)
+
+- enorme comunità di utenti (per qualsiasi problema, basta googlare ;-))
+
+## Scaricare e installare R
+
+```{r , echo = FALSE, out.width = "70px",fig.align="center"}
+knitr::include_graphics("img/R.PNG")
+```
+
+\fontsize{7.5pt}{12}\selectfont
+
+1. Scaricare R dal sito \color{blue}https://www.r-project.org/ \color{black} \newline CRAN (*Comprehensive R Archive Network*): rete di server che offrono le versioni aggiornate e la relativa documentazione
+
+2. Cliccare sulla voce \color{blue}[CRAN](https://cran.r-project.org/mirrors.html) \color{black} nel menu *Download* a sinistra, selezionare un mirror (es. \color{blue}[il primo](https://cloud.r-project.org/)\color{black}, oppure \color{blue}[quello dell'Università di Padova](https://cran.stat.unipd.it/)\color{black}), quindi il proprio sistema operativo (Linux, MacOS, o Windows)
+
+3. Installare R aprendo il file .exe (Windows) o .pkg (MacOS) appena scaricato, oppure seguire i comandi in base alla propria versione di Linux
+
+## L'interfaccia di Base R
+
+```{r , echo = FALSE, out.width = "300px"}
+knitr::include_graphics("img/baseR.PNG")
+```
+
+\fontsize{6pt}{12}\selectfont
+
+- **R Console**: per scrivere (`>`) ed eseguire (tasto `Enter`) velocemente dei comandi
+
+- **R Script** (menu `File` > `New R Script`): per scrivere, modificare e salvare sequenze di comandi (salvati con formato .R)
+
+- **Outputs** (es. plot): finestre che si aprono lanciando il relativo comando
+
+## Alcuni comandi elementari
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+  
+Commenti (`#`)
+```{r, eval=FALSE}
+# questo è un commento
+```
+
+Semplici operazioni matematiche
+```{r }
+2 + 2 # addizione
+2 * 2 # moltiplicazione
+log(3) # algoritmo naturale
+exp(1) # funzione esponenziale
+```
+
+Espressioni più lunghe (con **parentesi tonde**)
+```{r}
+sqrt(5) * ( (4 - 1/2)^2 - pi/2^(1/3) )
+```
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Assegnare valori a degli **oggetti** (`<-`)
+```{r }
+x <- 3 # creo oggetto 'x' associato al valore 3
+x # stampo il valore di x
+```
+
+I nomi degli oggetti possono includere lettere, numeri, trattini bassi e punti (es. `pippo`, `pippo32`, `pippo.32`, `pippo_32`)
+```{r }
+pippo_32 <- x / 3
+pippo_32 # stampo il valore di pippo_32
+```
+
+**R è sensibile alle minuscole**! \newline Mentre non è sensible agli spazi
+```{r }
+3+2
+3     +  2
+```
+
+  \endcol
+\endcols
+
+## Hands on: Operazioni aritmetiche con R
+
+\fontsize{7pt}{12}\selectfont
+Calcola il risultato delle seguenti operazioni utilizzando R (\color{blue}[soluzioni](https://github.com/psicostat/Introduction2R/blob/master/exercises/chapter-03-first-comands.R)\color{black}): \newline \fontsize{6pt}{12}\selectfont Source: https://psicostat.github.io/Introduction2R/first-comands.html#esercizi \newline \fontsize{7pt}{12}\selectfont
+
+1. $\frac{(45+21)^3+\frac{3}{4}}{\sqrt{32-\frac{12}{17}}}$
+
+2. $\frac{\sqrt{7-\pi}}{3\ (45-34)}$
+
+3. $\sqrt[3]{12-e^2}+\ln(10\pi)$
+
+4. $\frac{\sin(\frac{3}{4}\pi)^2+\cos(\frac{3}{2}\pi)}{\log_7{e^{\frac{3}{2}}}}$
+
+5. $\frac{\sum_{n=1}^{10} n}{10}$
+
+Extra: Assegna il risultato dell'operazione 4 all'oggetto `x`, il risultato della 5 all'oggetto `y`, e calcola la somma `x + y` 
+
+## RStudio
+
+```{r , echo = FALSE, out.width = "100px",fig.align="center"}
+knitr::include_graphics("img/RStudio.PNG")
+```
+
+\fontsize{7.5pt}{12}\selectfont
+- RStudio è un ambiente di sviluppo integrato per R, che lo integra con un'**interfaccia grafica ottimizzata** per facilitarne l'utilizzo (es. accesso a file e oggetti, grafici, dataset, ecc.) presentando tutto in un'unica finestra
+
+- fondato da J J Allaire nel 2009 (scritto con linguaggio Java e C++), gestito e sviluppato da gruppo di ricerca internazionale (gli stessi di `tidyverse` e `shiny`)
+
+- **gratuito e open source** (GNU General Public License) + versioni a pagamento
+
+## Scaricare e installare RStudio
+
+```{r , echo = FALSE, out.width = "100px",fig.align="center"}
+knitr::include_graphics("img/RStudio.PNG")
+```
+
+\fontsize{7.5pt}{12}\selectfont
+
+NB: soltanto **dopo** aver installato R
+
+1. Scaricare RStudio dal sito \color{blue}https://rstudio.com \color{black}
+
+2. Cliccare sulla voce \color{blue}[Download](https://www.rstudio.com/products/rstudio/download/) \color{black} nel menu in alto, selezionare la versione gratuita (FREE) di **RStudio Desktop**, quindi il proprio sistema operativo
+
+3. Installare RStudio aprendo il file appena scaricato
+
+## L'interfaccia di RStudio
+
+```{r , echo = FALSE, out.width = "300px"}
+knitr::include_graphics("img/RStudio2.PNG")
+```
+
+\fontsize{6pt}{12}\selectfont
+
+- **Source**: R Scripts (`.R`), documenti e presentazioni (`.Rmd`), applicazioni (`.app`), ecc. Per lanciare un o più comandi, selezionali e premi `Ctrl + Enter` oppure clicca sul tasto `Run` in alto a destra
+
+- **Environment** (oggetti presenti nel workspace) & **History** (storico comandi eseguiti)
+
+## Hands on: Operatori relazionali e logici
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+  
+Operatori relazionali
+```{r }
+3 == 3 # uguale
+3 != 3 # diverso
+x >= 3 # maggiore o uguale
+5 %in% c(3, 5, 8) # inclusione
+```
+
+Operatori logici
+```{r }
+x <- TRUE
+y <- !x # negazione
+y
+x & (5 < 2) # congiunzione
+x | (5 < 2) # disgiunzione inclusiva
+```
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{7pt}{12}\selectfont
+  
+Esercizi sugli operatori relazionali e logici:\newline \fontsize{6pt}{12}\selectfont Source: https://psicostat.github.io/Introduction2R/first-comands.html#esercizi \newline
+  
+1. Definisci una proposizione per valutare la seguente condizione: “x è un numero compreso tra -4 e -2 oppure è un numero compreso tra 2 e 4”
+
+2. Definisici due relazioni false e due vere che ti permettano di valutare i risultati di tutti i possibili incroci che puoi ottenere con gli operatori logici `&` e `|`
+
+3. Esegui le seguenti operazioni `4 ^ 3 %in% c(2,3,4)` e `4 * 3 %in% c(2,3,4)`. Cosa osservi nell’ordine di esecuzione degli operatori?
+
+  \endcol
+\endcols
+
+## Oggetti e funzioni
+
+\fontsize{7pt}{12}\selectfont
+- **Oggetti**: identificano dei valori salvati nel workspace (`Environment`); i valori vengono assegnati agli oggetti con il simbolo `<-` (minore e meno); per richiamare un oggetto è sufficiente scrivere il suo nome
+```{r }
+pippo_32 <- 2 # assegno valore a oggetto
+pippo_32 # stampo oggetto
+pippo_32 <- pippo_32 + 1 # aggiorno oggetto
+pippo_32
+```
+
+\fontsize{7pt}{12}\selectfont
+- **Funzioni**: etichette associate a sequenze di comandi programmati per restituire uno specifico output (chiamato **valore**) sulla base di uno o più input (chiamati **argomenti**); il nome della funzione è sempre seguito dalle parentesi tonde, entro le quali si impostano gli argomenti (spesso ci sono dei valori di default)
+```{r }
+sqrt(x = 9) # radice quadrata dell'argomento x
+seq(from = 1, to = 5) # sequenza numerica dal valore 'from' al valore 'to' 
+```
+
+## Tipi (classi) di oggetti
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+  
+**Logical** (logico)
+```{r }
+x <- TRUE
+x <- T
+class(x)
+```
+
+**Numeric** (numeri)
+```{r }
+x <- 1.4
+class(x)
+```
+
+**Integer** (numeri interi)
+```{r }
+as.integer(x)
+```
+
+**Character** (stringa di testo)
+```{r }
+x <- "Mi    piace R"
+x
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{7pt}{12}\selectfont
+  
+**Vector** (vettore): serie di valori con la stessa classe (es. numeric) combinati con la funzione `c()` (combine)
+```{r }
+x <- c(1, 10.5, 3, 2)
+x + 1
+sqrt(x)
+y <- c("mi","piace", "R")
+```
+
+**Matrix** (matrice): tabella `nrow * ncol`
+```{r }
+x <- matrix(1:12, nrow = 3, ncol = 4)
+rownames(x) <- y # nomi di riga
+x
+```
+
+  \endcol
+\endcols
+
+## Funzioni e pacchetti
+
+\fontsize{6pt}{12}\selectfont
+Molte cose in R si fanno usando delle funzioni, composte dai seguenti elementi: **nome**, **parentesi tonde**, **argomenti** (`nomeArgomento = valoreArgomento` oppure senza nome, in base alla posizione di default), valore restituito (*value*)
+
+```{r }
+sqrt(x = c(1,2,3))
+sqrt(c(1,2,3))
+```
+
+**R Help system**: Per conoscere i dettagli (argomenti) di qualsiasi funzione, basta inserire il simbolo `?` seguito dal nome della funzione
+```{r eval=FALSE}
+?sqrt
+```
+
+**R packages**: Per ottenere funzioni aggiuntive rispetto a quelle dei pacchetti di base, è necessario installare e aprire il relativo pacchetto (**package**)
+```{r eval=FALSE}
+install.packages("nome_pacchetto") # installare un pacchetto
+library(nome_pacchetto) # apripre un pacchetto
+nome_pacchetto::nome_funzione() # usare funzione senza aprire il pacchetto
+```
+
+## Il primo passo di ogni analisi: La working directory
+
+\fontsize{7pt}{12}\selectfont
+
+Per aprire un file che si trova in una specifica cartella, è necessario prima impostare la **working directory**, ovvero la cartella dalla quale vengono importati i file di input e nella quale vengono esportati i file di output.
+```{r }
+getwd() # funzione per stampare la WD attuale
+dir()[1:3] # primi 3 file nella WD
+```
+```{r eval=FALSE}
+setwd("C:/Users/mengh/OneDrive/Desktop") # impostare una nuova directory
+```
+
+**Trucchetto con RStudio**: ogni volta che iniziamo un nuovo progetto (es. analisi tesi, report progetto), come primo passo creiamo un nuovo **R project** (`.Rproj`) dal menu `File > New R Project`, selezionando una directory esistente o creandone una nuova. Così quella sarà già impostata come la WD di tutti gli script associati al progetto.
+
+## Caricare ed esportare un dataset
+
+\fontsize{7pt}{12}\selectfont
+
+Per caricare un dataset che si trova nella working directory, è necessario usare una specifica funzione in base al formato del file.
+```{r }
+# file .RData
+load(file = "data/questionarioDidatticaIntegrativa.RData") # import
+save(di, file = "data/questionarioDidatticaIntegrativa.RData") # export
+```
+
+R può importare ed esportare dati salvati con molti formati diversi, alcuni dei quali richiedono l'installazione di pacchetti aggiuntivi.
+```{r }
+# file .CSV (comma separated values)
+di <- read.csv("data/questionarioDidatticaIntegrativa.csv") # import
+write.csv(di,"data/questionarioDidatticaIntegrativa.csv", row.names=FALSE) # export
+```
+
+## Un assaggio di analisi: Statistiche descrittive
+
+\fontsize{6pt}{12}\selectfont
+R ha delle funzioni di base per facilitare il calcolo delle statistiche descrittive di base.
+```{r }
+summary(di$numVar) # descrittive variable numVar
+```
+
+Oltre a questi, c'è una serie di funzioni per calcolare media, deviazione standard, ecc.
+```{r }
+mean(di$numVar) # media
+sd(di$numVar) # deviazione standard
+```
+
+## Hands on: Dataset & descrittive
+
+\fontsize{7pt}{12}\selectfont
+
+1. Scaricare il file `questionarioDidatticaIntegrativa.CSV` da Github: \newline \color{blue} https://github.com/Luca-Menghini/eseRcitazioni \color{black} > `data`
+
+2. Salvare il file in una cartella e impostare quella cartella come working directory
+
+3. Importare il file su R
+
+4. Calcolare la media, la mediana, il secondo quartile, e la deviazione standard della variabile numVar
+
+5. Usare la funzione `histogram` per visualizzare la distribuzione della variabile `numVar`
+
+# Risorse & contatti
+
+## Risorse: Primi passi con R
+
+\fontsize{7pt}{12}\selectfont In italiano:
+
+\fontsize{6pt}{12}\selectfont
+- Callagher, C. Z., & Gambarota, F. (2021). *Introduzione a R*. Corso introduttivo online: https://psicostat.github.io/Introduction2R
+
+- Pastore, M. (2015). *Analisi dei dati in Psicologia (Con applicazioni in R)*. Bologna: Il Mulino.
+
+\fontsize{7pt}{12}\selectfont In inglese:
+
+\fontsize{6pt}{12}\selectfont
+- R Core Team. *The R Manuals*. Manuali in formato pdf: https://cran.r-project.org/manuals.html (in particolare *An Introduction to R (with many examples*, *R Data Import/Export*)
+
+- Dalgaard, P. (2008). *Introductory statistics with R*. New York: Springer.
+
+## Contatti
+
+```{r , echo = FALSE, out.width = "150px"}
+knitr::include_graphics("logo.PNG")
+```
+
+\fontsize{9pt}{12}\selectfont 
+
+**dott. Luca Menghini, Ph.D.**
+
+\fontsize{8pt}{12}\selectfont
+
+Assegnista di ricerca, Dipartimento di Psicologia, \newline Università degli Studi di Bologna
+
+luca.menghini3@unibo.it
+
+\color{blue} [Linkedin](https://linkedin.com/in/lucamenghini) \color{black} | \color{blue} [ResearchGate](https://www.researchgate.net/profile/Luca-Menghini) \color{black} | \color{blue} [GitHub](https://github.com/luca-menghini) \color{black} | \color{blue} [Twitter](https://twitter.com/LuMenPsy)
+
+</div>
