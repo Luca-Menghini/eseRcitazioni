@@ -1,4 +1,4 @@
-# EseRcitazioni con il linguaggio R
+# EseRcitazioni con R
 Questa repository include le slide e i materiali utilizzati per svolgere le esercitazioni pratiche per l'analisi dei dati con il linguaggio R.
 Le slide e tutti i materiali usati nelle eseRcitazioni  verranno di volta in volta caricati e aggiornati su questa repository.
 
