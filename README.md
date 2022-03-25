@@ -4,6 +4,6 @@ Le slide e tutti i materiali usati nelle eseRcitazioni  verranno di volta in vol
 
 Per visualizzare e scaricare le slide, [cliccare su questo link](https://luca-menghini.github.io/eseRcitazioni/slideEseRcitazioni.pdf).
 
-## Cartelle
+## Materiali
 - `data` include i dataset usati nelle eseRcitazioni
 - `scripts` include gli script con i principali comandi visti nelle eseRcitazioni
