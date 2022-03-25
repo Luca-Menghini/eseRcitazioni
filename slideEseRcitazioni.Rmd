@@ -68,15 +68,17 @@ library(Cairo)
 
 -   Implementare le tecniche analitiche apprese durante il corso utilizzando il software R su dataset reali
 
--   Svolgere insieme gli esercizi propedeutici all'esame
+-   Svolgere insieme gli esercizi propedeutici all'esame \newline
+
+Le slide e tutti materiali usati nelle eseRcitazioni verranno di volta in volta caricati e aggiornati sulla repository all'indirizzo \color{blue}https://github.com/Luca-Menghini/eseRcitazioni
 
 ## Outline
 
 \fontsize{9pt}{12}\selectfont
 
-- **Giorno 1**: Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e i comandi di base per caricare un dataset e calcolare le statistiche descrittive
+- **Giorno 1**: Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e alcuni comandi di base
 
-- **Giorno 2**: ..
+- **Giorno 2**: Working directory, caricare un dataset e calcolare le principali statistiche descrittive, oggetti di classe `factor`, matrici e `data.frame`
 
 - ...
 
@@ -156,7 +158,7 @@ Semplici operazioni matematiche
 ```{r }
 2 + 2 # addizione
 2 * 2 # moltiplicazione
-log(3) # algoritmo naturale
+log(3) # logaritmo naturale
 exp(1) # funzione esponenziale
 ```
 
@@ -182,7 +184,7 @@ pippo_32 <- x / 3
 pippo_32 # stampo il valore di pippo_32
 ```
 
-**R è sensibile alle minuscole**! \newline Mentre non è sensible agli spazi
+**R è sensibile alle maiuscole**! \newline Mentre non è sensible agli spazi
 ```{r }
 3+2
 3     +  2
@@ -383,6 +385,8 @@ library(nome_pacchetto) # apripre un pacchetto
 nome_pacchetto::nome_funzione() # usare funzione senza aprire il pacchetto
 ```
 
+# Giorno 2
+
 ## Il primo passo di ogni analisi: La working directory
 
 \fontsize{7pt}{12}\selectfont
@@ -443,6 +447,8 @@ sd(di$numVar) # deviazione standard
 4. Calcolare la media, la mediana, il secondo quartile, e la deviazione standard della variabile numVar
 
 5. Usare la funzione `histogram` per visualizzare la distribuzione della variabile `numVar`
+
+## To be continued
 
 # Risorse & contatti
 
