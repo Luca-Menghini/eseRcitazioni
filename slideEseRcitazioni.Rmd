@@ -78,7 +78,7 @@ Le slide e tutti materiali usati nelle eseRcitazioni verranno di volta in volta 
 
 - **Giorno 1**: Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e alcuni comandi di base
 
-- **Giorno 2**: Working directory, caricare un dataset e calcolare le principali statistiche descrittive, oggetti di classe `factor`, matrici e `data.frame`
+- **Giorno 2**: Vettori, fattori e matrici; Working directory, caricare un dataset e calcolare le principali statistiche descrittive; Oggetti di classe `data.frame`
 
 - ...
 
@@ -247,7 +247,7 @@ knitr::include_graphics("img/RStudio2.PNG")
 
 \fontsize{6pt}{12}\selectfont
 
-- **Source**: R Scripts (`.R`), documenti e presentazioni (`.Rmd`), applicazioni (`.app`), ecc. Per lanciare un o più comandi, selezionali e premi `Ctrl + Enter` oppure clicca sul tasto `Run` in alto a destra
+- **Source**: R Scripts (`.R`), documenti e presentazioni (`.Rmd`), applicazioni (`.app`), ecc. Per lanciare uno o più comandi, selezionali e premi `Ctrl + Enter` oppure clicca sul tasto `Run` in alto a destra
 
 - **Environment** (oggetti presenti nel workspace) & **History** (storico comandi eseguiti)
 
@@ -363,6 +363,361 @@ x
   \endcol
 \endcols
 
+# Giorno 2
+
+## Tipi (classi) di oggetti: vector
+
+\fontsize{7pt}{12}\selectfont
+Un vettore (*vector*) è una **sequenza di elementi dello stesso tipo** (classe), che può essere creata con la funzione **`c()`** (*combine*) o con altre funzioni.
+```{r }
+x <- c(1, 10.5, 3, 2) # creo vettore numerico
+y <- 1:10 # un altro vettore numerico
+(z <- rep(c(TRUE, FALSE), each = 2)) # vettore logico
+as.character(x) # converte la classe del vettore da numeric a character
+as.numeric(z) # da logical a numeric (FALSE = 0, TRUE = 1)
+```
+
+Applicando un'operazione o una funzione al vettore, questa viene applicata a tutti i suoi elementi.
+```{r }
+y*2 # moltiplica tutti i valori per 2
+round(sqrt(y), 2) # rad. quadrata dei valori di y, arrotondati a 2 decimali
+```
+
+## Tipi (classi) di oggetti: vector
+
+\fontsize{7pt}{12}\selectfont
+Alcune funzioni restituiscono un unico valore a partire da un vettore di valori.
+```{r }
+length(y) # numero di elementi nel vettore
+```
+Ad esempio, per calcolare delle **statistiche descrittive su vettori numerici**:
+```{r }
+sum(y) # somma gli elementi nel vettore
+max(y) # valore massimo
+mean(y) # media
+median(y) # mediana
+var(y) # varianza
+sd(y) # deviazione standard
+```
+
+## Tipi (classi) di oggetti: vector
+
+\fontsize{7pt}{12}\selectfont
+Le **parentesi quadre** `[ ]` permettono di **selezionare uno o più elementi** del vettore.
+```{r }
+pippo32 <- c("uno", "due", "tre", "quattro", "cinque") # vettore di caratteri
+pippo32[3] # seleziono il terzo valore di y
+pippo32[3:4] # terzo e quarto valore del vettore pippo32
+pippo32[c(4, 2)] # quarto e secondo valore (non scrivere pippo32[4,3] !)
+```
+Ad esempio, si possono selezionare gli **elementi che rispettano certe condizioni**, usando gli operatori logici e relazionali:
+```{r }
+y[y <= 3 | y > 8] # valori di y minori o uguali a 3 o maggiori di 8
+pippo32[pippo32 != "due"] # valori di pippo32 diversi da "due"
+pippo32[substr(pippo32, 2, 2) == "u"] # valori con lettera "u" in 2a posizione
+```
+
+## Tipi (classi) di oggetti: vector
+
+\fontsize{7pt}{12}\selectfont
+La funzione `which()` restituisce la **posizione** degli elementi per cui è vera una condizione specifcata.
+```{r }
+substr(pippo32, 2, 2) == "u" # testa l'equivalenza per ogni elemento
+which(substr(pippo32, 2, 2) == "u") # elementi con equivalenza TRUE
+pippo32[substr(pippo32,2,2)=="u"] == pippo32[which(substr(pippo32,2,2)=="u")]
+```
+Per **cambiare** uno o più elementi di un vettore, usa il simbolo `<-`
+```{r }
+pippo32[1] <- "UNO!"
+```
+
+Per **eliminare** uno o più elementi da un vettore, usa il simbolo `-`
+```{r }
+pippo32[-c(2, 4)]
+```
+
+Hands on: \color{red} **Esercizio 1.5** \color{black} \fontsize{5.5pt}{12}\selectfont (Moodle > ADcom2122 > Materiale Didattico > MateRiale eseRcizi)
+
+## Tipi (classi) di oggetti: factor
+
+\fontsize{7pt}{12}\selectfont
+Un fattore (*factor*) è un tipo speciale di vettore usato in R per lavorare con le **variabili categoriali** (nominali o ordinali). I valori possibili assunti dal fattore sono chiamati **livelli** (*levels*), di default ordinati in ordine crescente (numerico o alfabetico).
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+```{r }
+as.factor(pippo32) # da character a factor
+# summary() mostra un sommario della variabile
+summary(pippo32) 
+# per i fattori, mostra la freq. di ogni livello
+summary(as.factor(pippo32)) # equivale a table()
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+```{r }
+(y <- rep(c(2,4,6),3))
+as.factor(y) # da numeric a factor
+summary(y)
+summary(as.factor(y)) 
+```
+
+  \endcol
+\endcols
+
+## Tipi (classi) di oggetti: factor
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+  
+Creare un fattore con la funzione `factor()`:
+```{r }
+factor(x = c("C",rep("A",3),c("B","A","C")))
+(x <- factor(x = c("C","A","B","A"), # vettore
+             levels = c("C","A","B"))) # livelli
+
+levels(x) # levels() stampa i nomi dei livelli
+factor(x, levels=c("B","A","C")) # cambia ordine
+levels(x) <- c("Uno","Due","Tre") # cambia nomi
+x
+```
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Quando si lavora con **variabili ordinali**, è possibile specificare l'ordine dei livelli impostando l'argomento `ordered = TRUE`. Viene così generato un **fattore ordinato**, sempre seguendo l'ordine definito da `levels`.
+```{r }
+# fattore non ordinato (default)
+factor(x = c("Maria","Mauro","Teresa","Carlo"))
+
+# fattore ordinato (default: ordine alfabetico)
+factor(x = c("Maria","Mauro","Teresa","Carlo"),
+       ordered = TRUE)
+```
+
+Hands on: \color{red} **Esercizio 1.8**
+
+  \endcol
+\endcols
+
+## Tipi (classi) di oggetti: matrix
+
+\fontsize{7pt}{12}\selectfont
+Una matrice (*matrix*) è una **struttura bidimensionale (`nrow*ncol`) di elementi dello stesso tipo**, che può
+essere creata con la funzione: \newline `matrix(data, nrow = , ncol = , byrow = FALSE)`
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+```{r }
+(x <- matrix(1:12, nrow = 3, ncol = 4))
+matrix(1:12, nrow = 3, ncol = 4, byrow = TRUE)
+matrix(c("Mar","Mau","Ter","Car"), nrow = 2)
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Per **selezionare uno o più elementi** di una matrice, usamo ancora una volta le **parentesi quadre**, ma questa volta con la sintassi `nome_matrice[num_riga, num_colonna]`
+```{r }
+x[1,2] # prima riga, seconda colonna
+x[2,1] # seconda riga, prima colonna
+x[1:3,2] # righe 1-3, seconda colonna
+x[1,] # prima riga, tutte le colonne
+x[,2] # seconda colonna, tutte le righe
+```
+
+  \endcol
+\endcols
+
+## Tipi (classi) di oggetti: matrix
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+  
+```{r }
+x
+``` 
+  
+Unire due matrici:
+```{r }
+cbind(x,matrix(rep(3,6),nrow=3)) # per colonna
+rbind(x,matrix(rep(3,4),ncol=4)) # per riga
+``` 
+
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+
+Nomi e numero di righe e colonne:
+```{r }
+rownames(x) <- c("a","b","c") # nomi righe
+colnames(x) <- 1:4 # nomi colonne
+x
+c(nrow(x),ncol(x)) # numero righe e col. = dim(x)
+t(x) # matrice trasposta (inverte righe e col.)
+``` 
+Hands on: \color{red} **Esercizio 1.6**
+
+  \endcol
+\endcols
+
+## Strutture di dati: dataframe
+
+\fontsize{7pt}{12}\selectfont
+Un dataframe è una **struttura bidimensionale di elementi di diverso tipo** \newline (es. numeric, character e factor), che può
+essere creata con la funzione: \newline `data.frame(nome_variabile1 = c(...), nome_variable2 = c(...), ...)`
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+```{r }
+(x <- data.frame(Num = 1:4,
+                 Char = c("a","b","c","d"),
+                 Logi = rep(c(TRUE,FALSE),2)))
+str(x) # struttura del dataframe
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Mentre il comando `str(nome_df)` restituisce la struttura di un dataframe, `summary(nome_df)` stampa un sommario per ogni variabile.
+```{r }
+summary(x)
+```
+
+  \endcol
+\endcols
+
+## Strutture di dati: dataframe
+
+\fontsize{7pt}{12}\selectfont
+La **manipolazione di un dataframe** è molto simile a quella già vista per le matrici.
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+Selezione elementi e unione di due dataframe:
+```{r }
+x[2, 2:3] # seconda riga, colonne 2 e 3
+cbind(x,data.frame(new=4:1)) # unione per colonna
+rbind(x[1:3,],data.frame(Num=10, # per riga
+                         Char="z",Logi=FALSE))
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Nomi e numero di righe e colonne:
+```{r }
+rownames(x) # default = 1:nrow(x)
+colnames(x)[2] # nome colonna 2
+nrow(x)
+ncol(x)
+``` 
+
+Trasporre un dataframe:
+```{r }
+t(x)
+```
+
+  \endcol
+\endcols
+
+## Strutture di dati: dataframe
+
+\begincols
+  \begincol{.5\textwidth}
+  
+![](img/dollar.png){ width=25% } 
+  
+  \fontsize{6pt}{12}\selectfont
+Per selezionare una colonna (vettore) di un dataframe, si può usare il simbolo `$`, con la sintassi `nome_dataframe$nome_colonna`:
+```{r }
+x$Char # seleziono colonna Char
+x$Char[2] # secondo elemento della colonna Char
+x$Char[2] == x[2,2] # due comandi equivalenti
+x$Char <- NULL # elimino colonna Char
+x[x$Num < 3,] # seleziono casi con Num < 3
+# stesso risultato con subset(x, Num < 3)
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Modo alternativo di selezionare le colonne:
+```{r }
+x[,"Logi"]
+x[1:2,c("Num","Logi")]
+``` 
+
+"Testa" e "coda" di un dataframe:
+```{r }
+head(x, n = 2) # prime due righe
+tail(x, 1) # ultima riga
+```
+
+Hands on: \color{red} **Esercizio 1.9**
+
+  \endcol
+\endcols
+
+## Strutture di dati: list
+
+\fontsize{7pt}{12}\selectfont
+Una lista (*list*) è una **raccolta di oggetti** che possono avere **diversa classe** (es. vector, matrice e dataframe) e **diversa lunghezza** (al contrario di matrici e dataframe). Si tratta della struttura più complessa eversatile di R, e si crea con la funzione \newline `list(nome_oggetto1 = ..., nome_oggetto2 = ..., ...)` 
+
+\begincols
+  \begincol{.5\textwidth}
+  
+  \fontsize{6pt}{12}\selectfont
+```{r }
+x <- list(Num = 1:4,
+          Matr = matrix(1:12, nrow=3),
+          df = x,
+          lst = list(1:3,2:3))
+str(x) # struttura del dataframe
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Per **selezionare gli elementi** di una lista, usiamo sempre le **parentesi quadre**
+```{r }
+x[1] # singole = crea sotto-lista
+class(x[1])
+x[[1]] # doppie = estrae l'oggetto
+class(x[[1]])
+x[[3]][2,1]
+```
+
+  \endcol
+\endcols
+
 ## Funzioni e pacchetti
 
 \fontsize{6pt}{12}\selectfont
@@ -385,70 +740,116 @@ library(nome_pacchetto) # apripre un pacchetto
 nome_pacchetto::nome_funzione() # usare funzione senza aprire il pacchetto
 ```
 
-# Giorno 2
+## Oggetti, funzioni e workspace
 
-## Il primo passo di ogni analisi: La working directory
+\fontsize{7pt}{12}\selectfont
+Quando assegnamo un valore ad una variabile, questa viene registrata nel **workspace**: il posto che contiene tutti gli oggetti e le funzioni definiti dall'utente (sezione Environment di RStudio).
+
+La funzione `ls()` stampa i nomi di tutti gli oggetti e le funzioni presenti nel workspace, mentre la funzione `rm()` rimuove l'oggetto specificato tra parentesi:
+```{r echo=FALSE}
+rm(list=ls())
+```
+```{r }
+x <- 1 # assegno valore a x
+y <- 2 # assegno valore a y
+ls() # mostra tutti gli oggetti nel workspace
+rm(y) # rimuove l'oggetto y
+ls()
+```
+
+Combinando le due funzioni, il comando **`rm(list=ls())`** svuota il workspace, eliminando tutti gli oggetti e le funzioni (molto utile **all'inizio di ogni script!**)
+```{r }
+rm(list = ls())
+```
+
+## Oggetti e funzioni già inclusi in Base R
+
+\fontsize{7pt}{12}\selectfont
+
+Alcuni pacchetti di base (oggetti e funzioni) sono **già installati in R**. Questi non richiedono l'apertura di nessun pacchetto e non compaiono nel workspace.
+```{r }
+rm(list=ls()) # svuoto il workspace
+head(sleep,4) # dataset sleep dal pacchetto datasets
+mean(sleep$extra) # funzione mean() dal pacchetto base
+letters[2] # costanti dal pacchetto base
+ls() # il workpace è vuoto!
+```
+
+## Caricare oggetti dall'esterno: La working directory
 
 \fontsize{7pt}{12}\selectfont
 
 Per aprire un file che si trova in una specifica cartella, è necessario prima impostare la **working directory**, ovvero la cartella dalla quale vengono importati i file di input e nella quale vengono esportati i file di output.
 ```{r }
 getwd() # funzione per stampare la WD attuale
-dir()[1:3] # primi 3 file nella WD
+dir()[1:3] # stampa i primi 3 file nella WD
 ```
 ```{r eval=FALSE}
-setwd("C:/Users/mengh/OneDrive/Desktop") # impostare una nuova directory
+setwd("data") # sottocartella nella WD
+setwd("C:/Users/mengh/OneDrive/Desktop") # nuova directory
 ```
 
-**Trucchetto con RStudio**: ogni volta che iniziamo un nuovo progetto (es. analisi tesi, report progetto), come primo passo creiamo un nuovo **R project** (`.Rproj`) dal menu `File > New R Project`, selezionando una directory esistente o creandone una nuova. Così quella sarà già impostata come la WD di tutti gli script associati al progetto.
+**Trucchetto con RStudio**: ogni volta che inizi un nuovo progetto (es. analisi tesi, report progetto), crea un nuovo **R project** (`.Rproj`) dal menu `File > New R Project`, selezionando una directory esistente o creandone una nuova. Così quella sarà già impostata come la WD per tutti i file associati al progetto.
 
 ## Caricare ed esportare un dataset
 
 \fontsize{7pt}{12}\selectfont
 
+Il primo passo di ogni analisi dei dati con R è quello di caricare una struttura di dati (registrati con un certo metodo e salvati con un certo formato) nel workspace.
+
 Per caricare un dataset che si trova nella working directory, è necessario usare una specifica funzione in base al formato del file.
-```{r }
+```{r eval=FALSE}
 # file .RData
-load(file = "data/questionarioDidatticaIntegrativa.RData") # import
-save(di, file = "data/questionarioDidatticaIntegrativa.RData") # export
+load(file = "data/questionarioStudenti.RData") # import
+save(qs, file = "data/questionarioStudenti.RData") # export
 ```
 
 R può importare ed esportare dati salvati con molti formati diversi, alcuni dei quali richiedono l'installazione di pacchetti aggiuntivi.
-```{r }
+```{r eval=FALSE}
 # file .CSV (comma separated values)
-di <- read.csv("data/questionarioDidatticaIntegrativa.csv") # import
-write.csv(di,"data/questionarioDidatticaIntegrativa.csv", row.names=FALSE) # export
+qs <- read.csv(file = "data/questionarioStudenti.csv") # import
+write.csv(x = qs,"data/questionarioStudenti.csv", row.names = FALSE) # export
+
+# file .SAV (da SPSS)
+library(foreign)
+qs <- read.spss("data/questionarioStudenti.sav", to.data.frame=TRUE)
 ```
 
-## Un assaggio di analisi: Statistiche descrittive
-
-\fontsize{6pt}{12}\selectfont
-R ha delle funzioni di base per facilitare il calcolo delle statistiche descrittive di base.
-```{r }
-summary(di$numVar) # descrittive variable numVar
-```
-
-Oltre a questi, c'è una serie di funzioni per calcolare media, deviazione standard, ecc.
-```{r }
-mean(di$numVar) # media
-sd(di$numVar) # deviazione standard
-```
-
-## Hands on: Dataset & descrittive
+## Caricare ed esportare un dataset
 
 \fontsize{7pt}{12}\selectfont
 
-1. Scaricare il file `questionarioDidatticaIntegrativa.CSV` da Github: \newline \color{blue} https://github.com/Luca-Menghini/eseRcitazioni \color{black} > `data`
+Se hai dubbi su quale funzione usare per leggere un file, puoi usare il menu punta-e-clicca di RStudio: `File` > **`Import Dataset`** \newline
 
-2. Salvare il file in una cartella e impostare quella cartella come working directory
+Un modo veloce (ma poco riproducibile!) per caricare un file su R è usare la funzione **`file.choose()`** al posto del nome del file. Questo consente di caricare un file senza nemmeno dover impostare la WD.
+```{r eval=FALSE}
+# file .CSV (comma separated values)
+qs <- read.csv(file = file.choose()) # import
+```
 
-3. Importare il file su R
+## Hands on: Questionario incontri facoltativi
 
-4. Calcolare la media, la mediana, il secondo quartile, e la deviazione standard della variabile numVar
+\fontsize{6.5pt}{12}\selectfont
 
-5. Usare la funzione `histogram` per visualizzare la distribuzione della variabile `numVar`
+1. Scarica i file `questionarioStudenti.RData` e `questionarioStudenti.csv` da Github: \newline \color{blue} https://github.com/Luca-Menghini/eseRcitazioni/tree/main/data \color{black} (Premere su `File` > `Raw` > `Download` o tasto dx > `Save as`), salva il file in una cartella e imposta quella cartella come working directory.
 
-## To be continued
+3. Importa entrambi i file su RStudio e confronta i due oggetti. Di che classe sono? E le variabili di che classe sono?
+
+4. Calcola la media, la mediana, il secondo quartile, e la deviazione standard della variabile `numVar` e usa la funzione `hist()` per visualizzare il grafico di densità ad istogrammi. Prova a cambiare il valore dell'argomento `breaks`.
+
+5. Usa la funzione `table()` per produrre la tabella di frequenza della variabile `Q02` ("*Quale giorno preferiresti per gli incontri facoltativi?*")
+
+6. Ora fai la stessa cosa, ma considerando solo chi ha risposto "Sì" alla domanda `Q01` ("*Parteciperai a tutti gli incontri?*")
+
+7. Ora incrocia le frequenze delle variabili `Q02` e `Q03` ("*Riusciresti a partecipare anche se fossero nel giorno che NON hai scelto?*")
+
+## Esercizi
+
+\fontsize{8pt}{12}\selectfont
+ 
+- **Esercizio 1.10**
+
+- **Esercizio 1.11**
 
 # Risorse & contatti
 
@@ -459,12 +860,16 @@ sd(di$numVar) # deviazione standard
 \fontsize{6pt}{12}\selectfont
 - Callagher, C. Z., & Gambarota, F. (2021). *Introduzione a R*. Corso introduttivo online: https://psicostat.github.io/Introduction2R
 
+- Agostinelli, C. (2000). *Introduzione a R*. Corso introduttivo PDF: https://cran.r-project.org/doc/contrib/manuale.0.3.pdf
+
 - Pastore, M. (2015). *Analisi dei dati in Psicologia (Con applicazioni in R)*. Bologna: Il Mulino.
 
 \fontsize{7pt}{12}\selectfont In inglese:
 
 \fontsize{6pt}{12}\selectfont
 - R Core Team. *The R Manuals*. Manuali in formato pdf: https://cran.r-project.org/manuals.html (in particolare *An Introduction to R (with many examples*, *R Data Import/Export*)
+
+- UniGlasgow - PsyTheacR. Corso interattivo analisi dati con R: https://psyteachr.github.io/
 
 - Dalgaard, P. (2008). *Introductory statistics with R*. New York: Springer.
 
