@@ -72,17 +72,23 @@ library(Cairo)
 
 Le slide e tutti materiali usati nelle eseRcitazioni verranno di volta in volta caricati e aggiornati sulla repository all'indirizzo \color{blue}https://github.com/Luca-Menghini/eseRcitazioni
 
-## Outline
+## Programma incontri facoltativi
 
-\fontsize{9pt}{12}\selectfont
+\fontsize{8pt}{12}\selectfont
 
-- **Giorno 1**: Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e alcuni comandi di base
+- **Giorno 1 (Get started)**: Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e alcuni comandi di base
 
-- **Giorno 2**: Vettori, fattori e matrici; Working directory, caricare un dataset e calcolare le principali statistiche descrittive; Oggetti di classe `data.frame`
+- **Giorno 2 (R objects)**: Vettori, fattori, matrici e dataframe
 
-- ...
+- **Giorno 3 (R workspace)**: Worskpace e working directory, caricare un dataset e calcolare le principali statistiche descrittive
 
-# Giorno 1
+- **Giorno 4 (Graphics)**: Visualizzare i dati e interpretare i principali tipi di grafici
+
+- **Giorno 5 (Linear Models)**: Modelli di regressione lineare
+
+- **Giorno 6 (Linear Mixed-Effects and Structural Equation Models)**: Regressione multilivello e path analysis
+
+# Get started
 
 ## Il linguaggio R
 
@@ -363,7 +369,7 @@ x
   \endcol
 \endcols
 
-# Giorno 2
+# R objects
 
 ## Tipi (classi) di oggetti: vector
 
@@ -406,7 +412,7 @@ sd(y) # deviazione standard
 Le **parentesi quadre** `[ ]` permettono di **selezionare uno o più elementi** del vettore.
 ```{r }
 pippo32 <- c("uno", "due", "tre", "quattro", "cinque") # vettore di caratteri
-pippo32[3] # seleziono il terzo valore di y
+pippo32[3] # seleziono il terzo valore di pippo32
 pippo32[3:4] # terzo e quarto valore del vettore pippo32
 pippo32[c(4, 2)] # quarto e secondo valore (non scrivere pippo32[4,3] !)
 ```
@@ -718,6 +724,8 @@ x[[3]][2,1]
   \endcol
 \endcols
 
+# R workspace
+
 ## Funzioni e pacchetti
 
 \fontsize{6pt}{12}\selectfont
@@ -819,13 +827,14 @@ qs <- read.spss("data/questionarioStudenti.sav", to.data.frame=TRUE)
 
 \fontsize{7pt}{12}\selectfont
 
-Se hai dubbi su quale funzione usare per leggere un file, puoi usare il menu punta-e-clicca di RStudio: `File` > **`Import Dataset`** \newline
-
 Un modo veloce (ma poco riproducibile!) per caricare un file su R è usare la funzione **`file.choose()`** al posto del nome del file. Questo consente di caricare un file senza nemmeno dover impostare la WD.
 ```{r eval=FALSE}
-# file .CSV (comma separated values)
-qs <- read.csv(file = file.choose()) # import
+qs <- read.csv(file = file.choose())
 ```
+
+Se hai dubbi su quale funzione usare per leggere un file, puoi usare il menu punta-e-clicca di RStudio: `File` > **`Import Dataset`** \newline
+
+Hands on: \color{red} Apri o crea un file `.xlsx` sul tuo PC, salvalo in formato **`.csv`** (comma separated values) e importalo su R; poi prova ad importare direttamente il file **`.xlsx`**; in entrambi i casi, osserva la classe e la struttura dell'oggetto importato.
 
 ## Hands on: Questionario incontri facoltativi
 
@@ -835,13 +844,40 @@ qs <- read.csv(file = file.choose()) # import
 
 3. Importa entrambi i file su RStudio e confronta i due oggetti. Di che classe sono? E le variabili di che classe sono?
 
-4. Calcola la media, la mediana, il secondo quartile, e la deviazione standard della variabile `numVar` e usa la funzione `hist()` per visualizzare il grafico di densità ad istogrammi. Prova a cambiare il valore dell'argomento `breaks`.
+4. Usa la funzione `describe()` del pacchetto `psych` (forse va prima installato!) per calcolare le statistiche descrittive della variabile `numVar` e usa la funzione `hist()` per visualizzare il grafico di densità ad istogrammi (prova a cambiare il valore dell'argomento `breaks`).
 
 5. Usa la funzione `table()` per produrre la tabella di frequenza della variabile `Q02` ("*Quale giorno preferiresti per gli incontri facoltativi?*")
 
 6. Ora fai la stessa cosa, ma considerando solo chi ha risposto "Sì" alla domanda `Q01` ("*Parteciperai a tutti gli incontri?*")
 
 7. Ora incrocia le frequenze delle variabili `Q02` e `Q03` ("*Riusciresti a partecipare anche se fossero nel giorno che NON hai scelto?*")
+
+## Statistiche descrittive
+
+\fontsize{6pt}{12}\selectfont
+
+\begincols
+  \begincol{.5\textwidth}
+```{r }
+x <- c(1,2,2,3,4)
+mean(x) # media
+median(x) # mediana
+as.numeric(which.max(table(x))) # moda
+var(x) # varianza
+sd(x) # deviazione standard
+quantile(x,probs=c(0.25,0.50,0.75,1)) # quartili
+IQR(x) # intervallo interquartile
+``` 
+  
+  \endcol
+\begincol{.5\textwidth}
+
+  \fontsize{6pt}{12}\selectfont
+  
+Frequenze cumulate, cumulate empiriche
+
+  \endcol
+\endcols
 
 ## Esercizi
 
@@ -850,6 +886,16 @@ qs <- read.csv(file = file.choose()) # import
 - **Esercizio 1.10**
 
 - **Esercizio 1.11**
+
+- **Esercizio 1.12**
+
+- **Esercizio 1.13**
+
+# Graphics
+
+# LM
+
+# LMER & SEM
 
 # Risorse & contatti
 
