@@ -834,7 +834,11 @@ qs <- read.csv(file = file.choose())
 
 Se hai dubbi su quale funzione usare per leggere un file, puoi usare il menu punta-e-clicca di RStudio: `File` > **`Import Dataset`** \newline
 
-Hands on: \color{red} Apri o crea un file `.xlsx` sul tuo PC, salvalo in formato **`.csv`** (comma separated values) e importalo su R; poi prova ad importare direttamente il file **`.xlsx`**; in entrambi i casi, osserva la classe e la struttura dell'oggetto importato.
+\color{red} Hands on: 
+
+- Apri o crea un file `.xlsx` sul tuo PC, salvalo in formato **`.csv`** (comma separated values) e importalo su R
+- Prova ad importare direttamente il file **`.xlsx`** (se hai dubbi, cerca su Google \newline "*how to read xlsx file with R*")
+- In entrambi i casi, osserva la classe e la struttura dell'oggetto importato
 
 ## Hands on: Questionario incontri facoltativi
 
@@ -852,21 +856,22 @@ Hands on: \color{red} Apri o crea un file `.xlsx` sul tuo PC, salvalo in formato
 
 7. Ora incrocia le frequenze delle variabili `Q02` e `Q03` ("*Riusciresti a partecipare anche se fossero nel giorno che NON hai scelto?*")
 
-## Statistiche descrittive
+## Statistiche descrittive (univariate)
 
 \fontsize{6pt}{12}\selectfont
 
 \begincols
   \begincol{.5\textwidth}
 ```{r }
-x <- c(1,2,2,3,4)
-mean(x) # media
-median(x) # mediana
+x <- c(1,1,1,2,8,9) # creo vettore numerico
+```
+```{r }
+c(mean(x),median(x)) # media & mediana
 as.numeric(which.max(table(x))) # moda
-var(x) # varianza
-sd(x) # deviazione standard
+c(var(x),sd(x)) # varianza & dev. standard
+quantile(x,probs=0.90) # 90° percentile
 quantile(x,probs=c(0.25,0.50,0.75,1)) # quartili
-IQR(x) # intervallo interquartile
+round(rank(x)/length(x),2) # ranghi percentili
 ``` 
   
   \endcol
@@ -874,7 +879,46 @@ IQR(x) # intervallo interquartile
 
   \fontsize{6pt}{12}\selectfont
   
-Frequenze cumulate, cumulate empiriche
+```{r }
+table(x) # frequenze assolute
+round(table(x)/length(x),2) # freq relative
+cumsum(x) # somma cumulata
+cumsum(table(x)) # freq cumulate assolute
+round(cumsum(table(x)/ # freq cumulate relative
+               length(x)),2) 
+``` 
+
+  \endcol
+\endcols
+
+## Statistiche descrittive (bivariate)
+
+\fontsize{6pt}{12}\selectfont
+
+\begincols
+  \begincol{.55\textwidth}
+```{r }
+y <- -x - 1 # valori inversamente prop. a x
+z <- round(rnorm(n=length(x)),1) # valori a caso
+(df <- data.frame(x,y,z)) # nuovo dataframe
+```
+
+Correlazione e covarianza
+```{r }
+cov(x,y) # covarianza tra x e y
+cor(x,y) # correlazione
+``` 
+  \endcol
+\begincol{.45\textwidth}
+
+\fontsize{6pt}{12}\selectfont`
+
+Quando ho più di due variabili:
+```{r }
+cov(df) # matrice di covarianza
+
+cor(df) # matrice di correlazione
+```
 
   \endcol
 \endcols
@@ -883,21 +927,306 @@ Frequenze cumulate, cumulate empiriche
 
 \fontsize{8pt}{12}\selectfont
  
-- **Esercizio 1.10**
+- **Esercizio 1.10***
 
-- **Esercizio 1.11**
+- **Esercizi 1.11-1.13***
 
-- **Esercizio 1.12**
+- **Esercizio 1.26**** \newline
 
-- **Esercizio 1.13**
+\fontsize{6.7pt}{12}\selectfont
+
+*I dataset sono inclusi nella cartella `dati.esercizi.zip` su Moodle \newline (`ADcom2122` > `Materiale didattico` > `MateRiale eseRcizi`), ma si possono scaricare \newline anche da \color{blue} [github.com/Luca-Menghini/eseRcitazioni/tree/main/data](https://github.com/Luca-Menghini/eseRcitazioni/tree/main/data) \color{black}
+
+**Per scaricare il pacchetto `ADati` del prof. Pastore, esegui i seguendi comandi collegandoti ad una rete wifi:
+```{r eval=FALSE}
+install.packages("devtools") # installo pacchetto devtools
+library(devtools) # apro pacchetto devtools
+install_github("https://github.com/masspastore/ADati") # installo ADati da github
+library(ADati) # apro pacchetto ADati
+```
 
 # Graphics
+
+## Graphics in R: Principali funzioni
+
+\begincols
+  \begincol{.55\textwidth}
+
+\fontsize{8pt}{12}\selectfont  
+
+Funzioni di alto livello \newline (stanno in piedi da sole)
+
+\fontsize{6pt}{12}\selectfont  
+```{r eval=FALSE}
+# funzione base (dipende dalla classe dell'oggetto)
+plot() # scatter plot (grafico a dispersione)
+
+# distribuzione
+boxplot() # boxplot (diagramma a scatola e a baffi)
+qqnorm() # quantile-quantile plot
+
+# frequenze
+barplot() # grafico a barre (variabili categoriali)
+hist() # istogramma (variabili continue)
+pie() # pie chart
+
+# interazioni
+interaction.plot()
+``` 
+  \endcol
+\begincol{.45\textwidth}
+
+\fontsize{8pt}{12}\selectfont  
+
+Funzioni di basso livello \newline (aggiungono elementi alle prime)
+
+\fontsize{6pt}{12}\selectfont  
+```{r eval=FALSE}
+points() # aggiunge punti
+lines() # aggiunge linee
+text() # aggiunge del testo
+
+# retta di regressione lineare
+abline(a = ..., b = ...)
+
+# elementi più complessi
+rect() # aggiunge rettangoli
+polygon() # aggiunge poligoni
+
+# altre caratteristiche del grafico
+axis() # per modificare gli assi
+legend() # per aggiungere una legenda
+```
+
+  \endcol
+\endcols
+
+## Parametri grafici
+
+\fontsize{7pt}{12}\selectfont  
+
+Esegui il comando `?par` per vedere tutti i parametri grafici modificabili.
+
+\begincols
+  \begincol{.55\textwidth}
+
+\fontsize{7pt}{12}\selectfont
+
+Alcuni possono essere impostati usando gli argomenti delle funzioni grafiche:
+
+\fontsize{6pt}{12}\selectfont  
+```{r eval=FALSE}
+# dimensioni
+cex = 2 # grandezza testo e simboli (moltiplicatore)
+lwd = 0.5 # spessore linee
+
+# colore e forma
+col = "red" # (vedi ?colors)
+lty = 2 # tipo di linee (1=solid, 2=dashed, ...)
+pch = 19 # forma dei punti (vedi ?points)
+
+# titoli
+main = "Titolo del grafico"
+xlab = "Titolo asse x"
+``` 
+  \endcol
+\begincol{.45\textwidth}
+
+\fontsize{7pt}{12}\selectfont  
+
+Altri devono essere impostati all'interno della funzione `par()`, che va eseguita prima di generare il grafico:
+
+\fontsize{6pt}{12}\selectfont  
+```{r eval=FALSE}
+# margini (bottom,left,top,right)
+mai # dimensione margini (in ince)
+mar # dimensione margini (in linee di testo)
+
+# struttura griglie di grafici
+mfrow=c(nrow, ncol) 
+# es. due grafici uno di fianco all'altro
+mfrow=c(2,1) 
+# es. due grafici uno sotto l'altro
+mfrow=c(1,2) 
+```
+
+  \endcol
+\endcols
+
+## Distribuzioni univariate: variabili continue
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=6,fig.height=2.8}
+X <- rnorm(n=100, mean=0, sd=1) # genero valori casuali dalla dist. normale standard
+par(mfrow = c(2,2), mai = c(0.3,0.5,0.2,0.5)) # voglio 4 grafici in una sola finestra
+plot(X) # scatter plot (grafico a dispersione)
+hist(X) # istogramma
+boxplot(X) # scatter plot (grafico a dispersione)
+qqnorm(X) # grafico quantile-quantile
+``` 
+
+## Distribuzioni univariate: variabili categoriali
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=6,fig.height=2.8}
+Y <- factor(sample(x=c("A","B","C"),size=100,replace=TRUE)) # frequenze casuali per A, B e C
+par(mfrow = c(2,2), mai = c(0.3,0.5,0.2,0.5)) # voglio 4 grafici in una sola finestra
+plot(Y, main="Frequenze assolute") # per oggetti di classe factor = barplot(table(Y))
+barplot(round(cumsum(table(Y)/length(Y)),2), main="Frequenze cumulate relative")
+plot(Y) # stesso grafico ma aggiungo del testo in blu
+text(x=c(0.7,1.9,3.1),y=10,labels=c("gruppo A","gruppo B","gruppo C"),col="blue",cex=0.7)
+``` 
+
+## Valutare la normalità di una distribuzione
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=2.5,fig.height=2.6}
+X <- rnorm(n = 1000, mean = 60, sd = 20) # norm
+par(mfrow=c(2,1),mai=rep(0.3,4),mar=rep(1.8,4))
+hist(X,main="",xlab="",ylab="") # istogramma
+qqnorm(X,cex=0.5,main="",pch=20) # quant-quanti
+qqline(X,col="red") # aggiungo linea distr. norm.
+``` 
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{7pt}{12}\selectfont  
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=2.5,fig.height=2.6}
+Y <- runif(n=1000,min=min(X),max=max(X)) # unif
+par(mfrow=c(2,1),mai=rep(0.3,4),mar=rep(1.8,4))
+hist(Y,main="",xlab="",ylab="") # istogramma
+qqnorm(Y,cex=0.5,main="",pch=20) # quant-quanti
+qqline(Y,col="red") # aggiungo linea distr. norm.
+```  
+
+  \endcol
+\endcols
+
+## Valutare la normalità di una distribuzione
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r }
+# Distribuzione empirica
+hist(X, freq = FALSE)
+# Distribuzione teorica (attesa)
+curve(dnorm(x, mean = 60, sd = 20),
+      from = min(X), to = max(X),
+      col = "red", lwd = 2,
+      add = TRUE) 
+``` 
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r }
+# Distribuzione empirica
+hist(Y, freq = FALSE, ylim = c(0,0.02))
+# Distribuzione teorica (attesa)
+curve(dnorm(x, mean = 60, sd = 20),
+      from = min(Y), to = max(Y),
+      col = "red", lwd = 2,
+      add = TRUE)
+```  
+
+  \endcol
+\endcols
+
+## Valutare la normalità di una distribuzione
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=2.5,fig.height=2.6}
+library(moments) # asimmetria e curtosi
+c(skewness(X), kurtosis(X)) 
+# test Kolmogorov-Smirnov (H0: X è normale)
+ks.test(X, y="pnorm", mean=mean(X), sd=sd(X)) 
+# test Shapiro-Wilk (H0: X è normale)
+shapiro.test(X) 
+``` 
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=2.5,fig.height=2.6}
+# asimmetria e curtosi
+c(skewness(Y), kurtosis(Y)) 
+# test Kolmogorov-Smirnov (H0: Y è normale)
+ks.test(Y, y="pnorm", mean=mean(Y), sd=sd(Y)) 
+# test Shapiro-Wilk (H0: Y è normale)
+shapiro.test(Y) 
+```  
+
+  \endcol
+\endcols
+
+## Distribuzioni bivariate: variabili continue
+
+\begincols
+  \begincol{.6\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=1.8,fig.height=1.8,fig.align='center'}
+# creo y (indipendente da x) e z (proporzionale a x)
+Y <- rnorm(1000, mean=20, sd=1)
+Z <- X + rnorm(1000, sd = 20)
+par(mfrow=c(2,1),mai=rep(0.3,4),mar=rep(1.8,4),cex=.5)
+plot(X, Y, main = paste("XY r =",round(cor(X, Y),2)))
+abline(lm(Y~X),col="red") # retta di regr. lineare
+plot(X, Z, main = paste("XZ r =",round(cor(X, Z),2)))
+abline(lm(Z~X),col="red")
+``` 
+
+  \endcol
+\begincol{.4\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r message=FALSE,out.width='150px'}
+# creo dataframe con 4 variabili
+df <- data.frame(X, Y, Z, P = -Z)
+
+# Correlation plot
+library(corrplot)
+corrplot(cor(df),method="color",
+         tl.cex=2,cl.cex=1,
+         mar = c(0,0,0,10))
+```
+
+  \endcol
+\endcols
+
+## Distribuzioni bivariate: variabili categoriali
+
+To do
+
+## Distribuzioni bivariate: continue & categoriali
+
+To do
+
+## Salvare un grafico
+
+To do
+
+## Esercizi
+
+\fontsize{7pt}{12}\selectfont
+
+Teoria dei campioni, inferenza + altro
 
 # LM
 
 # LMER & SEM
 
-# Risorse & contatti
+# Resources
 
 ## Risorse: Primi passi con R
 
@@ -918,6 +1247,15 @@ Frequenze cumulate, cumulate empiriche
 - UniGlasgow - PsyTheacR. Corso interattivo analisi dati con R: https://psyteachr.github.io/
 
 - Dalgaard, P. (2008). *Introductory statistics with R*. New York: Springer.
+
+## Risorse: argomenti specifici
+
+\fontsize{7pt}{12}\selectfont Graphics:
+
+\fontsize{6pt}{12}\selectfont
+- Videolezioni di appRofondimento sul pacchetto `ggplot2`: disponibili su Moodle https://elearning.unipd.it/scuolapsicologia/mod/page/view.php?id=150311
+
+- Murrell (2011) R Graphics (II edition). New York: Chapman and Hall/CRC. Esempi con codice disponibili al sito https://www.stat.auckland.ac.nz/~paul/RGraphics/rgraphics.html
 
 ## Contatti
 
