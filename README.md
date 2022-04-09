@@ -6,4 +6,4 @@ Per visualizzare e scaricare le slide aggiornate, [cliccare su questo link](http
 
 ## Materiali
 - `data` include i dataset usati nelle eseRcitazioni
-- `scripts` include gli script con i principali comandi visti nelle eseRcitazioni
+- `scripts` include gli script con i principali comandi visti nelle eseRcitazioni e le soluzioni degli esercizi assegnati
