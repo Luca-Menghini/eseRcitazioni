@@ -1057,12 +1057,12 @@ mfrow=c(1,2)
 
 \fontsize{6pt}{12}\selectfont  
 ```{r fig.width=6,fig.height=2.8}
-X <- rnorm(n=100, mean=0, sd=1) # genero valori casuali dalla dist. normale standard
+X <- rnorm(n=100, mean=0, sd=1) # genero valori casuali dalla distribuzione normale standard
 par(mfrow = c(2,2), mai = c(0.3,0.5,0.2,0.5)) # voglio 4 grafici in una sola finestra
-plot(X) # scatter plot (grafico a dispersione)
-hist(X) # istogramma
-boxplot(X) # scatter plot (grafico a dispersione)
-qqnorm(X) # grafico quantile-quantile
+plot(X) # scatter plot: grafico a dispersione (variabilità)
+hist(X) # istogramma: distribuzione di frequenze per classi
+boxplot(X) # box plot: diagramma a scatola (1° e 3° quartile) e a baffi (+/- 1.5 IQR)
+qqnorm(X) # Q-Q plot: distribuzione cumulata di X vs. distribuzione cumulata normale)
 ``` 
 
 ## Distribuzioni univariate: variabili categoriali
@@ -1071,9 +1071,9 @@ qqnorm(X) # grafico quantile-quantile
 ```{r fig.width=6,fig.height=2.8}
 Y <- factor(sample(x=c("A","B","C"),size=100,replace=TRUE)) # frequenze casuali per A, B e C
 par(mfrow = c(2,2), mai = c(0.3,0.5,0.2,0.5)) # voglio 4 grafici in una sola finestra
-plot(Y, main="Frequenze assolute") # per oggetti di classe factor = barplot(table(Y))
+barplot(table(Y), main="Frequenze assolute") # grafico a barre: mostra le frequenze assolute
 barplot(round(cumsum(table(Y)/length(Y)),2), main="Frequenze cumulate relative")
-plot(Y) # stesso grafico ma aggiungo del testo in blu
+barplot(table(Y)) # stesso grafico ma aggiungo del testo in blu
 text(x=c(0.7,1.9,3.1),y=10,labels=c("gruppo A","gruppo B","gruppo C"),col="blue",cex=0.7)
 ``` 
 
@@ -1087,7 +1087,7 @@ text(x=c(0.7,1.9,3.1),y=10,labels=c("gruppo A","gruppo B","gruppo C"),col="blue"
 X <- rnorm(n = 1000, mean = 60, sd = 20) # norm
 par(mfrow=c(2,1),mai=rep(0.3,4),mar=rep(1.8,4))
 hist(X,main="",xlab="",ylab="") # istogramma
-qqnorm(X,cex=0.5,main="",pch=20) # quant-quanti
+qqnorm(X,cex=0.5,main="",pch=20) # Q-Q plot
 qqline(X,col="red") # aggiungo linea distr. norm.
 ``` 
   \endcol
@@ -1100,7 +1100,7 @@ qqline(X,col="red") # aggiungo linea distr. norm.
 Y <- runif(n=1000,min=min(X),max=max(X)) # unif
 par(mfrow=c(2,1),mai=rep(0.3,4),mar=rep(1.8,4))
 hist(Y,main="",xlab="",ylab="") # istogramma
-qqnorm(Y,cex=0.5,main="",pch=20) # quant-quanti
+qqnorm(Y,cex=0.5,main="",pch=20) # Q-Q plot
 qqline(Y,col="red") # aggiungo linea distr. norm.
 ```  
 
@@ -1147,7 +1147,7 @@ curve(dnorm(x, mean = 60, sd = 20),
 \fontsize{6pt}{12}\selectfont  
 ```{r fig.width=2.5,fig.height=2.6}
 library(moments) # asimmetria e curtosi
-c(skewness(X), kurtosis(X)) 
+c(skewness(X), kurtosis(X)) # (buono se ~ 0)
 # test Kolmogorov-Smirnov (H0: X è normale)
 ks.test(X, y="pnorm", mean=mean(X), sd=sd(X)) 
 # test Shapiro-Wilk (H0: X è normale)
@@ -1159,7 +1159,7 @@ shapiro.test(X)
 \fontsize{6pt}{12}\selectfont  
 ```{r fig.width=2.5,fig.height=2.6}
 # asimmetria e curtosi
-c(skewness(Y), kurtosis(Y)) 
+c(skewness(Y), kurtosis(Y)) # (buono se ~ 0)
 # test Kolmogorov-Smirnov (H0: Y è normale)
 ks.test(Y, y="pnorm", mean=mean(Y), sd=sd(Y)) 
 # test Shapiro-Wilk (H0: Y è normale)
@@ -1176,29 +1176,28 @@ shapiro.test(Y)
 
 \fontsize{6pt}{12}\selectfont  
 ```{r fig.width=1.8,fig.height=1.8,fig.align='center'}
-# creo y (indipendente da x) e z (proporzionale a x)
-Y <- rnorm(1000, mean=20, sd=1)
-Z <- X + rnorm(1000, sd = 20)
+Y <- rnorm(1000, mean=20, sd=1) # Y (indipendente da X)
+Z <- X + rnorm(1000, sd = 20) # Z (proporzionale a X)
+# Scatter plot:
 par(mfrow=c(2,1),mai=rep(0.3,4),mar=rep(1.8,4),cex=.5)
 plot(X, Y, main = paste("XY r =",round(cor(X, Y),2)))
 abline(lm(Y~X),col="red") # retta di regr. lineare
 plot(X, Z, main = paste("XZ r =",round(cor(X, Z),2)))
-abline(lm(Z~X),col="red")
+abline(lm(Z~X),col="red") # tilde (~) con Alt + 1-2-6
 ``` 
 
   \endcol
 \begincol{.4\textwidth}
 
 \fontsize{6pt}{12}\selectfont  
-```{r message=FALSE,out.width='150px'}
+```{r message=FALSE,out.width='170px'}
 # creo dataframe con 4 variabili
 df <- data.frame(X, Y, Z, P = -Z)
-
-# Correlation plot
+# Correlation plot:
 library(corrplot)
 corrplot(cor(df),method="color",
          tl.cex=2,cl.cex=1,
-         mar = c(0,0,0,10))
+         mar = c(0,0,0,15))
 ```
 
   \endcol
@@ -1206,15 +1205,88 @@ corrplot(cor(df),method="color",
 
 ## Distribuzioni bivariate: variabili categoriali
 
-To do
+\fontsize{6pt}{12}\selectfont  
+```{r }
+# creo data.frame con sesso (M/F) e livello di educazione (primaria, medie, superiori, università)
+df <- data.frame(sex = sample(x = rep(c("F","M"),50), size = 100),
+                 edu = sample(x = rep(c("prim","med","sup","uni"),25), size = 100))
+``` 
+
+\begincols
+  \begincol{.6\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=4.2,fig.height=3.2,out.width='70%',fig.align='center'}
+table(df) # frequenze incrociate
+par(mai=rep(0.4,4))
+barplot(table(df),legend.text = TRUE) # bar plot
+``` 
+
+  \endcol
+\begincol{.4\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=5,fig.height=4}
+# versione con 'gruppi affiancati'
+par(mai=rep(0.4,4))
+barplot(table(df),legend.text = TRUE,
+        beside = TRUE)
+```
+
+  \endcol
+\endcols
 
 ## Distribuzioni bivariate: continue & categoriali
 
-To do
+\fontsize{6pt}{12}\selectfont  
+```{r fig.width=7,fig.height=3.5,out.width='80%',warning=FALSE,message=FALSE}
+par(mfrow = c(2,2), mai = c(0.5,1,0.2,0.5)) # nota: uso il dataset sleep (già incluso in R base)
+barplot(tapply(sleep$extra, sleep$group, FUN=mean), # grafico a barre x le medie (SCONSIGLIATO!)
+        main="SCONSIGLIATO!",cex.main=1.5, ylab = "extra"); abline(a=0,b=1,col="red",lwd=2)
+hist(sleep[sleep$group==1,"extra"], breaks=10, col = rgb(0,0,1,alpha=0.5),  
+     xlim = c(min(sleep$extra), max(sleep$extra)), xlab="", main="") # istogramma per gruppo
+hist(sleep[sleep$group==2,"extra"], breaks=10, col = rgb(1,0,0,alpha=0.5), add = TRUE)
+boxplot(extra ~ group, data = sleep) # box plot per gruppo
+library(vioplot); vioplot(extra ~ group, data = sleep) # grafico a violino: densità per gruppo
+``` 
 
 ## Salvare un grafico
 
-To do
+\begincols
+  \begincol{.55\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r }
+# 1. apro nuovo file con formato PNG
+png(filename = "graFico.png", # titolo del grafico
+    width = 350, height = 350) # larghezza e altezza
+
+# 2. creo il grafico
+plot(sleep$group, sleep$extra, 
+     xlab = "group", ylab = "extra", col = "#2E9FDF")
+
+# 3. chiudo il file
+dev.off()
+``` 
+
+  \endcol
+\begincol{.45\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+
+Formati alternativi (vedi `?png`)
+```{r eval=FALSE}
+png() # Portable Network Graphics
+
+bpm() # bitmap
+
+jpeg() # Joint Photographic Experts Group
+
+tiff() # Tagged Image File Format
+```
+
+  \endcol
+\endcols
 
 ## Esercizi
 
