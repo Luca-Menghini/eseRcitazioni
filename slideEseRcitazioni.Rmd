@@ -1178,7 +1178,7 @@ shapiro.test(Y)
 ```{r fig.width=1.8,fig.height=1.8,fig.align='center'}
 Y <- rnorm(1000, mean=20, sd=1) # Y (indipendente da X)
 Z <- X + rnorm(1000, sd = 20) # Z (proporzionale a X)
-# Scatter plot:
+# Scatter plot
 par(mfrow=c(2,1),mai=rep(0.3,4),mar=rep(1.8,4),cex=.5)
 plot(X, Y, main = paste("XY r =",round(cor(X, Y),2)))
 abline(lm(Y~X),col="red") # retta di regr. lineare
@@ -1191,9 +1191,9 @@ abline(lm(Z~X),col="red") # tilde (~) con Alt + 1-2-6
 
 \fontsize{6pt}{12}\selectfont  
 ```{r message=FALSE,out.width='170px'}
-# creo dataframe con 4 variabili
 df <- data.frame(X, Y, Z, P = -Z)
-# Correlation plot:
+
+# Correlation plot
 library(corrplot)
 corrplot(cor(df),method="color",
          tl.cex=2,cl.cex=1,
@@ -1290,15 +1290,60 @@ tiff() # Tagged Image File Format
 
 ## Esercizi
 
-\fontsize{7pt}{12}\selectfont
+\begincols
+  \begincol{.48\textwidth}
 
-Teoria dei campioni, inferenza + altro
+\fontsize{7.5pt}{12}\selectfont
+**Introduzione a R**:
+
+1.22 (distribuzioni di probabilità)
+
+1.26 (dataset, descrittive e grafici)*\newline
+
+**Teoria dei campioni**
+
+2.2 (popolazione e distr. campionarie)
+
+2.8 (variabili casuali e distr. campionarie)
+
+2.14 (dataset, campioni e probabilità)**\newline
+
+**Inferenza statistica**
+
+3.4 (dataset, grafici e test statistici)**
+
+3.11 (grafici, test e potenza statistica)\newline
+
+  \endcol
+\begincol{.53\textwidth}
+
+\fontsize{6pt}{12}\selectfont
+*Per scaricare il pacchetto `ADati` del prof. Pastore:
+```{r eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("https://github.com/masspastore/ADati")
+library(ADati)
+```
+
+*Per caricare un dataset dal pacchetto `ADati`:
+```{r eval=FALSE}
+data(gambling, # nome del dataset
+     package = "ADati")
+```
+
+**I dataset sono inclusi nella cartella `dati.esercizi.zip` su Moodle
+(`ADcom2122` > `Materiale didattico` > `MateRiale eseRcizi`), ma si possono scaricare
+anche da \color{blue}github.com/Luca-Menghini/eseRcitazioni/tree/main/data \color{black}
+
+  \endcol
+\endcols
 
 # LM
 
 # LMER & SEM
 
-# Resources
+# Risorse
 
 ## Risorse: Primi passi con R
 
