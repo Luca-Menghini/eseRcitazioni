@@ -7,3 +7,22 @@ Per visualizzare e scaricare le slide aggiornate, [cliccare su questo link](http
 ## Materiali
 - `data` include i dataset usati nelle eseRcitazioni
 - `scripts` include gli script con i principali comandi visti nelle eseRcitazioni e le soluzioni degli esercizi assegnati
+
+## Programma incontri
+- **Giorno 1: Get started** 
+  Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e alcuni comandi di base
+
+- **Giorno 2: R objects** 
+  Vettori, fattori, matrici e dataframe
+
+- **Giorno 3: R workspace** 
+  Worskpace e working directory, caricare un dataset e calcolare le principali statistiche descrittive
+
+- **Giorno 4: R Graphics** 
+  Visualizzare i dati e interpretare i principali tipi di grafici
+
+- **Giorno 5: Linear Models** 
+  Modelli di regressione lineare semplice e multipla
+
+- **Giorno 6: Multilevel & SEM** 
+  Modelli lineari multilivello e multivariati
