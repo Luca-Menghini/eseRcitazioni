@@ -29,6 +29,7 @@ output:
     slide_level: 2
     includes:
       in_header: mystyle.tex
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -76,17 +77,17 @@ Le slide e tutti materiali usati nelle eseRcitazioni verranno di volta in volta 
 
 \fontsize{8pt}{12}\selectfont
 
-- **Giorno 1 (Get started)**: Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e alcuni comandi di base
+- **Giorno 1: Get started) \newline Installare R e RStudio, acquisire confidenza con l'interfaccia del software, e alcuni comandi di base
 
-- **Giorno 2 (R objects)**: Vettori, fattori, matrici e dataframe
+- **Giorno 2: R objects** \newline Vettori, fattori, matrici e dataframe
 
-- **Giorno 3 (R workspace)**: Worskpace e working directory, caricare un dataset e calcolare le principali statistiche descrittive
+- **Giorno 3: R workspace** \newline Worskpace e working directory, caricare un dataset e calcolare le principali statistiche descrittive
 
-- **Giorno 4 (Graphics)**: Visualizzare i dati e interpretare i principali tipi di grafici
+- **Giorno 4: RGraphics** \newline Visualizzare i dati e interpretare i principali tipi di grafici
 
-- **Giorno 5 (Linear Models)**: Modelli di regressione lineare
+- **Giorno 5: Linear Models** \newline Modelli di regressione lineare semplice e multipla
 
-- **Giorno 6 (Linear Mixed-Effects and Structural Equation Models)**: Regressione multilivello e path analysis
+- **Giorno 6: Regressione mutlilivello & SEM** \newline Modelli lineari a effetti misti e path analysis
 
 # Get started
 
@@ -945,7 +946,7 @@ install_github("https://github.com/masspastore/ADati") # installo ADati da githu
 library(ADati) # apro pacchetto ADati
 ```
 
-# Graphics
+# R graphics
 
 ## Graphics in R: Principali funzioni
 
@@ -1339,7 +1340,7 @@ anche da \color{blue}github.com/Luca-Menghini/eseRcitazioni/tree/main/data \colo
   \endcol
 \endcols
 
-# LM
+# Linear models
 
 ## Regressione lineare
 
@@ -1560,6 +1561,668 @@ anche da \color{blue}github.com/Luca-Menghini/eseRcitazioni/tree/main/data \colo
 \endcols
 
 # LMER & SEM
+
+## Regressione lineare multilivello
+
+\fontsize{7pt}{12}\selectfont
+- La **regressione lineare** consiste nel determinare il legame tra due variabili attraverso una funzione lineare del tipo $Y_{ji} =$ \color{blue} $\beta_0$ \color{black} + \color{red} $\beta_1$ \color{black} $X_i + \epsilon_i$ \newline dove \color{blue} $\beta_0$ è l'**intercetta** \color{black} e \color{red} $\beta_1$ è la **pendenza** \color{black}
+
+- Un assunto della regressione lineare è l'**indipendenza delle osservazioni**, una condizione che non viene sempre incontrata, ad esempio con **misure ripetute** (diversi trial per soggetto)
+
+- La **regressione lineare multilivello** permette di analizzare questi casi assumendo che l'intercetta e la pendenza **varino casualmente** da un soggetto all'altro: $Y_{ij} =$ \color{blue} $\beta_0$ \color{black} + \color{red} $\beta_1$ \color{black} $X_{ij} + \epsilon_{ij}$ = \color{blue} $(\beta_0 + \lambda_{0j})$ \color{black} + \color{red} $(\beta_1 + \lambda_{1j})$ \color{black} $X_{ij} + \epsilon_{ij}$
+
+- In altre parole, gli effetti stimati dal modello vengono decomposti in una componente "fissa", che rappresenta l'intercetta e la pendenza 'medie' del campione (**effetti fissi**), e una componente casuale, che rappresenta la variabilità tra individui $j$ nei due parametri (**effetti random**). Per questo motivo, i modelli multilivello vengono chiamati **modelli lineari ad effetti misti** (fissi + random)
+
+Beautiful tutorial: \color{blue} **http://mfviz.com/hierarchical-models**
+
+## Dataset wide & dataset long
+
+\fontsize{7pt}{12}\selectfont
+I dataset usati dai modelli lineari multilivello hanno una **struttura gerarchica**, con le osservazioni al livello più basso (**livello 1**, es. tempi di reazione trial per trial, studenti all'interno di una classe) **nidificate** (*nested*) nelle variabili di livello più alto (**livello 2**, es. soggetti, classi scolastiche). Questi possono essere organizzati in due formati:
+
+- **foma estesa** (*wide form*): classica struttura con una riga per partecipante (`subj`)
+```{r echo=FALSE}
+data.frame(subj=c("s1","s2","s3"),age=c(23,24,22),
+           RT_trial1=c(386,345,394),RT_trial2=c(389,338,410),RT_trialN=c("...","...","..."),
+           meanRT=c(370.5,321.2,397.1))
+```
+
+- **foma lunga** (*long form*): una riga per trial (`trialN`), con più righe per soggetto
+```{r echo=FALSE}
+data.frame(subj=c("s1","s1","s1","s2"),age=c(23,23,23,24),
+           trial=c("1","2","...","1"),condition=c("A","A","...","A"),
+           RT=c("386","389","...","345"))
+```
+
+## Livello 1 e livello 2
+
+\fontsize{7pt}{12}\selectfont
+$Y_{ij} =$ \color{blue} $\beta_0$ \color{black} + \color{red} $\beta_1$ \color{black} $X_{ij} + \epsilon_{ij}$ (*livello 2: between*) \newline = \color{blue} $(\beta_0 + \lambda_{0j})$ \color{black} + \color{red} $(\beta_1 + \lambda_{1j})$ \color{black} $X_{ij} + \epsilon_{ij}$ (*livello 1: within*) \newline Nei modelli multilivello, la varianza della v. dipendente è scomposta in due componenti:
+
+- Varianza tra individui $j$ (***between***) che quantifica le differenze individuali tra i **valori medi** della v. dipendente (es. `meanRT`), permettendo di predirle in base ad altre variabili individuali (es. `age`)
+
+- Varianza entro individui (***within***) che quantifica la deviazione di ogni punteggio osservato $i$ in un dato individuo $j$ (es. `RT` soggetto `s1` al primo trial) dal punteggio medio dello stesso individuo (`RTdev = RT - meanRT`), permettendo di predirli in base ad altre variabili intra-individuali (es. `condition`)
+
+```{r echo=FALSE}
+data.frame(subj=c("s1","s1","s1","s2"),age=c(23,23,23,24),
+           trial=c("1","2","...","1"),condition=c("A","A","...","A"),
+           RT=c("386","389","...","345"),
+           meanRT=c(370.5,370.5,370.5,321.2),
+           RTdev=c(386-370.5,389-370.5,"...",345-321.2))
+```
+
+## Regressione multilivello in R: Esercizio 6.10
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{5.5pt}{12}\selectfont  
+Il data set `sherifdat13` nel pacchetto `multilevel` contiene i dati relativi a 24 soggetti [...] suddivisi in 8 gruppi (variabile **`group`**). I soggetti dei gruppi 1-4 hanno prima effettuato una **stima individuale** e poi hanno fornito una stima basata sulla valutazione di gruppo, i soggetti dei gruppi 5-8 hanno fornito solo una **valutazione come gruppo**. 
+
+- **`condition`** = 1 per i soggetti dei primi quattro gruppi; 0 per quelli dei secondi quattro. 
+
+- **`person`** = id. soggetti entro i gruppi (non univoco)
+
+- **`time`** = ripetizioni dell'esperimento 
+
+- **`y`** = stima fornita del movimento (in pollici) \newline
+
+L'obiettivo dello studio è di valutare se la stima del movimento sia predetta dal **tipo di compito** eseguito (se in gruppo o meno) e se vari nelle **ripetizioni** del compito.
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6.5pt}{12}\selectfont  
+1. Si acceda al data set `sherifdat` e si controlli la sua struttura.
+```{r }
+# install.packages("multilevel")
+data(sherifdat, package = "multilevel")
+str(sherifdat, give.attr = FALSE)
+```
+\fontsize{6.5pt}{12}\selectfont  
+2. Si individui la scala di misura delle variabili contenute nel data set. E' coerente con il significato empirico delle stesse?
+
+  \endcol
+\endcols
+
+## Regressione multilivello in R: Esercizio 6.10
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+3. Si producano le statistiche descrittive univariate delle variabili del data set.
+```{r warning=FALSE,message=FALSE}
+sherifdat[,c("time","group","condition")] <-
+ lapply(sherifdat[,c("time","group","condition")],
+        as.factor) # cambio classe alle v. categ.
+round(mean(sherifdat$y),2) # media y
+round(sd(sherifdat$y),2) # SD y
+# tabella di frequenza per time e condition
+table(sherifdat[,c("time","condition")])
+```
+
+\fontsize{6pt}{12}\selectfont  
+4. Si rappresenti graficamente la distribuzione univariata delle stime.
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+5. Si visualizzi la distribuzione delle stime in funzione di `time`, `group` e `condition.` Cosa emerge dall'ispezione dei grafici?
+```{r }
+par(mfrow=c(2,2))
+hist(sherifdat$y, main="Stime") # dist. univ.
+boxplot(y ~ time, data=sherifdat) # bivariat.
+boxplot(y ~ group, data=sherifdat)
+boxplot(y ~ condition, data=sherifdat)
+```
+
+  \endcol
+\endcols
+
+## Regressione multilivello in R: Esercizio 6.10
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+6. Si valuti, con un **modello di regressione lineare**, se `time`, `group` e `condition`
+siano predittive delle `y`. Quali considerazioni si possono fare osservando
+l'output del modello con il comando `summary()`?
+
+\fontsize{5.5pt}{12}\selectfont  
+```{r warning=FALSE,message=FALSE}
+m <- lm(y ~ time + group + condition, data=sherifdat)
+round(summary(m)$coefficients, 2)
+```
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+7. Si valutino graficamente gli assunti del modello prodotto al punto precedente.
+```{r warning=FALSE,message=FALSE,fig.width=5,fig.height=6}
+par(mfrow=c(2,2)); plot(m)
+```
+
+  \endcol
+\endcols
+
+## Regressione multilivello in R: Esercizio 6.10
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+8. Si modifichi opportunamente il modello del punto 6 utilizzando degli **effetti random** che
+tengano conto del disegno sperimentale e dei dati. Si interpretino i parametri ottenuti.
+```{r warning=FALSE,message=FALSE}
+# install.packages("lme4")
+library(lme4) # -> funzione lmer()
+# intercetta random: (1|group)
+m <- lmer(y ~ time + condition + (1|group), 
+          data = sherifdat)
+# intercetta & pendenza random: (condition|group)
+m2 <- lmer(y ~ time + condition + (condition|group), 
+           data = sherifdat)
+round(summary(m2)$coefficients, 2)
+```
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+9. Si valutino graficamente gli assunti.
+
+\fontsize{5pt}{12}\selectfont 
+```{r eval=FALSE}
+library(performance); ?check_model
+```
+```{r warning=FALSE,message=FALSE,fig.width=4.5,fig.height=4.2}
+par(mfrow=c(2,2))
+qqnorm(resid(m),main="Residuals Normality")
+plot(resid(m)~predict(m),main="Residuals vs. fitted")
+qqnorm(ranef(m)$group[,1],main="Rand. Intercept Norm.")
+boxplot(resid(m)~sherifdat$condition,main="Homosched.")
+```
+
+  \endcol
+\endcols
+
+## Regressione multilivello in R: Esercizio 6.10
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+9. Si rappresentino gli effetti (fissi) del modello e si commentino.
+```{r warning=FALSE,message=FALSE,fig.width=5,fig.height=3}
+library(effects)
+plot(allEffects(m))
+```
+
+Extra: confronto tra modelli
+```{r eval=FALSE}
+anova(m1,m2) # likelihood ratio test
+AIC(m1,m2) # Akaike information crit.
+BIC(m1,m2) # Bayesian informat. crit.
+```
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont
+$Y_{ij} =$ \color{blue} $\beta_0$ \color{black} + \color{red} $\beta_1$ \color{black} $X_{ij} + \epsilon_{ij}$ \newline = \color{blue} $(\beta_0 + \lambda_{0j})$ \color{black} + \color{red} $\beta_1$ \color{black} $X_{ij} + \epsilon_{ij}$ \newline 
+
+```{r }
+# effetti fissi
+fixef(m)[1] # intercetta (b0)
+fixef(m)[2:length(fixef(m))] # pendenze (b1)
+
+# effetti random
+head(ranef(m)$group[,1],3) # BLUPS
+sd(ranef(m)$group[,1]) # random intercept
+```
+
+  \endcol
+\endcols
+
+## Modelli di equazioni strutturali (SEM)
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{7pt}{12}\selectfont
+La **regressione lineare** consiste nel determinare il legame tra due variabili attraverso una funzione lineare del tipo $Y = \beta_1X_{1} + \beta_2X_{2} + \epsilon$ \newline
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(DiagrammeR); library(DiagrammeRsvg); library(rsvg)
+
+tmp <- grViz(
+'digraph boxes_and_circles {
+  graph [layout = neato]
+  node [shape = box]
+  X1 [label = <X<SUB>1</SUB>> pos="-2,0.5!"]
+  X2 [label = <X<SUB>2</SUB>> pos="-2,-0.5!"]
+  Y [pos="0,0!"]
+  node [shape = plaintext]
+  e [label = <&epsilon;> pos="1,0!"]
+  # edges
+  X1->Y [label = <&beta;<SUB>1</SUB>>]
+  X2->Y [label = <&beta;<SUB>2</SUB>>]
+  e->Y}')
+
+# Convert to SVG, then save as png
+tmp = export_svg(tmp)
+tmp = charToRaw(tmp) # flatten
+rsvg_png(tmp, "img/lm.png") # saved graph as png in current working directory
+```
+```{r , echo = FALSE, out.width = "130px",fig.align="center"}
+knitr::include_graphics("img/lm.png")
+```
+
+Un limite dei modelli lineari (semplici o multilivello) è quello di poter modellare **una variabile dipendente per volta** (sono modelli univariati) attraverso un'unica equazione.
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{7pt}{12}\selectfont
+I **modelli di equazioni strutturali** sono modelli **multivariati** che permettono di modellare simultaneamente diverse variabili dipendenti attraverso un **sistema di equazioni**:
+
+$$ \begin{cases} Y_2 = \beta_{21}X_{1} + \epsilon_2 \\\\ Y_3 = \beta_{31}X_{1} + \beta_{32}Y_2 + \epsilon_3 \end{cases} $$ \newline
+
+```{r echo=FALSE}
+tmp <- grViz(
+'digraph boxes_and_circles {
+  graph [layout = neato]
+  node [shape = box]
+  X1 [label = <X<SUB>1</SUB>> pos="-2,0!"]
+  Y2 [label = <Y<SUB>2</SUB>> pos="0,0.5!"]
+  Y3 [label = <Y<SUB>3</SUB>> pos="0,-0.5!"]
+  node [shape = plaintext]
+  e2 [label = <&epsilon;<SUB>2</SUB>> pos="1,0.5!"]
+  e3 [label = <&epsilon;<SUB>3</SUB>>pos="1,-0.5!"]
+  # edges
+  X1->Y2 [label = <&beta;<SUB>21</SUB>>]
+  X1->Y3 [label = <&beta;<SUB>31</SUB>>]
+  Y2->Y3 [label = <&beta;<SUB>32</SUB>>]
+  e2->Y2
+  e3->Y3}')
+
+# Convert to SVG, then save as png
+tmp = export_svg(tmp)
+tmp = charToRaw(tmp) # flatten
+rsvg_png(tmp, "img/sem.png") # saved graph as png in current working directory
+```
+```{r , echo = FALSE, out.width = "130px",fig.align="center"}
+knitr::include_graphics("img/sem.png")
+```
+
+  \endcol
+\endcols
+
+## SEM: Variabili, modello e matrici di covarianza
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{7pt}{12}\selectfont
+$$ \begin{cases} Y_2 = \beta_{21}X_1 + \epsilon_2 \\\\ Y_3 = \beta_{31}X_{1} + \beta_{32}Y_2 + \epsilon_3 \end{cases} $$ \newline
+```{r , echo = FALSE, out.width = "130px",fig.align="center"}
+knitr::include_graphics("img/sem.png")
+```
+
+- **Variabili esogene** ($X_1$): 'causate' all'esterno del modello (predittori), non viene stimato l'errore
+
+>- **Variabili endogene** ($Y_2$, $Y_3$): 'causate' all'interno del modello (dipendenti e/o predittori), viene stimato l'errore $\epsilon$
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{7pt}{12}\selectfont
+**Matrice di covarianza**: matrice di varianze (triangolo inferiore e superiore) e covarianze (diagonale): è il punto di partenza del processo di stima
+$$
+S = \left(\begin{array}{cc} 
+    S(y_2,y_2),S(y_2,y_3),S(y_2,x_1) \\
+    S(y_3,y_2),S(y_3,y_3),S(y_3,x_1) \\
+    S(x_1,y_2),S(x_1,y_3),S(x_1,x_1) 
+    \end{array}\right)
+$$
+
+Obiettivo dei SEM: stimare i parametri $\theta$ che rendano la **matrice di covarianza teorica** $\Sigma$ il più simile possibile alla matrice empirica $S$: \color{red} $H_0: \hat\Sigma(\theta) = \Sigma$ \color{black} \newline \newline dove $\hat\Sigma$ è la matrice riprodotta sulla base dei parametri stimati da $S$, mentre $\Sigma$ è la matrice di covarianza vera.
+
+  \endcol
+\endcols
+
+## SEM: Variabili osservate e variabili latenti
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont
+SEM con **variabili osservate** ($x$ e $y$): direttamente osservate e misurabili, rappresentate dai quadrati. \newline
+```{r echo=FALSE}
+tmp <- grViz(
+'digraph boxes_and_circles {
+  graph [layout = neato]
+  node [shape = box]
+  X1 [label = <X<SUB>1</SUB>> pos="-2,0!"]
+  Y2 [label = <Y<SUB>2</SUB>> pos="0,0.5!"]
+  Y3 [label = <Y<SUB>3</SUB>> pos="0,-0.5!"]
+  node [shape = plaintext]
+  e2 [label = <&epsilon;<SUB>2</SUB>> pos="1,0.5!"]
+  e3 [label = <&epsilon;<SUB>3</SUB>>pos="1,-0.5!"]
+  # edges
+  X1->Y2 [label = <&beta;<SUB>21</SUB>>]
+  X1->Y3 [label = <&beta;<SUB>31</SUB>>]
+  Y2->Y3 [label = <&beta;<SUB>32</SUB>> dir=both]
+  e2->Y2
+  e3->Y3}')
+
+# Convert to SVG, then save as png
+tmp = export_svg(tmp)
+tmp = charToRaw(tmp) # flatten
+rsvg_png(tmp, "img/semb.png") # saved graph as png in current working directory
+```
+```{r , echo = FALSE, out.width = "130px",fig.align="center"}
+knitr::include_graphics("img/semb.png")
+```
+
+SEM con **variabili latenti** ($\xi$, "xi"): ipotetiche, non misurabili direttamente ma ***indicate*** (attraverso i loading $\lambda$, "lambda") dalle $x$, rappresentate dai cerchi. \newline
+```{r echo=FALSE}
+tmp <- grViz(
+'digraph boxes_and_circles {
+  graph [layout = neato]
+  node [shape = oval]
+  E1 [label = <&xi;1> pos="-0.5,0!"]
+  E2 [label = <&xi;2> pos="0.5,0!"]
+  node [shape = box]
+  x1 [label = <x<SUB>1</SUB>> pos="-2,1!"]
+  x2 [label = <x<SUB>2</SUB>> pos="-2,0!"]
+  x3 [label = <x<SUB>3</SUB>> pos="-2,-1!"]
+  x4 [label = <x<SUB>4</SUB>> pos="2,1!"]
+  x5 [label = <x<SUB>5</SUB>> pos="2,0!"]
+  x6 [label = <x<SUB>6</SUB>> pos="2,-1!"]
+  node [shape = plaintext]
+  e1 [label = <&epsilon;<SUB>1</SUB>> pos="-3,1!"]
+  e2 [label = <&epsilon;<SUB>2</SUB>>pos="-3,0!"]
+  e3 [label = <&epsilon;<SUB>2</SUB>>pos="-3,-1!"]
+  e4 [label = <&epsilon;<SUB>1</SUB>> pos="3,1!"]
+  e5 [label = <&epsilon;<SUB>2</SUB>>pos="3,0!"]
+  e6 [label = <&epsilon;<SUB>2</SUB>>pos="3,-1!"]
+  # edges
+  E1->x1 [label = <&lambda;<SUB>11</SUB>>]
+  E1->x2 [label = <&lambda;<SUB>21</SUB>>]
+  E1->x3 [label = <&lambda;<SUB>31</SUB>>]
+  E2->x4 [label = <&lambda;<SUB>42</SUB>>]
+  E2->x5 [label = <&lambda;<SUB>52</SUB>>]
+  E2->x6 [label = <&lambda;<SUB>62</SUB>>]
+  E1->E2 [label = <&beta;<SUB>21</SUB>>]
+  e1->x1
+  e2->x2
+  e3->x3
+  e4->x4
+  e5->x5
+  e6->x6}')
+# Convert to SVG, then save as png
+tmp = export_svg(tmp)
+tmp = charToRaw(tmp) # flatten
+rsvg_png(tmp, "img/seml.png") # saved graph as png in current working directory
+```
+```{r , echo = FALSE, out.width = "150px",fig.align="center"}
+knitr::include_graphics("img/seml.png")
+```
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont
+In R, si può usare il pacchetto `lavaan`: 
+```{r , eval=FALSE}
+library(lavaan)
+
+# modello con variabili osservate
+m <- sem(model = 'Y2 ~ X1  # regressione (~)
+                  Y3 ~ X1   
+                  Y3 ~~ Y2 # covarianza (~~)',
+         data = my_data)
+
+
+# modello con variabili latenti
+m <- sem(model = '# modello di misurazione (=~)
+                  xi1 =~ x1 + x2 + x3
+                  xi2 =~ x4 + x5 + x6
+                  # modello di regressione (~)
+                  xi2 ~ xi1',
+         data = my_data)
+```
+
+  \endcol
+\endcols
+
+## SEM: Esercizio 7.2
+
+\begincols
+  \begincol{.45\textwidth}
+
+\fontsize{6.5pt}{12}\selectfont  
+Abbiamo i punteggi di 15 matricole di una grande università del midwest su 5 scale: 
+
+- **`gravereq`** = media dei voti sui corsi obbligatori (`x1`)
+- **`gravelec`** = media dei voti sui corsi opzionali (`x2`)
+- **`knowledg`** = voto di conoscenza generale della scuola superiore (`x3`)
+- **`iqprevyr`** = punteggio al QI nell'anno precedente (`y1`)
+- **`edmotiv`** = punteggio motivazionale dell'anno precedente (`y2`) \newline
+
+Si vuole valutare se le variabili `x1`, `x2` e `x3` sono **predittive dei voti** sui corsi.
+
+  \endcol
+\begincol{.60\textwidth}
+
+\fontsize{6.5pt}{12}\selectfont  
+1. Si importino i dati del file `Finn.dat` in R.
+```{r }
+finn <- read.csv("data/Finn.dat", sep = "")
+head(finn,3) # prime 3 righe
+colnames(finn) <- c("x1","x2","x3","y1","y2")
+```
+\fontsize{6.5pt}{12}\selectfont  
+2. Si produca la **matrice di covarianza** ($S$) tra le variabili del dataset.
+```{r eval=FALSE}
+cov(finn) # covarianze (nota: diagonale = varianze)
+```
+\fontsize{5.5pt}{12}\selectfont
+```{r echo=FALSE}
+cov(finn)
+```
+
+  \endcol
+\endcols
+
+## SEM: Esercizio 7.2
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6.5pt}{12}\selectfont  
+3. Si definiscano le **equazioni del modello** in cui `x1`, `x2` e `x3` sono predittori di `y1` e `y2`.
+```{r }
+m <- 'y1 ~ x1 + x2 + x3
+      y2 ~ x1 + x2 + x3'
+```
+
+\fontsize{6.5pt}{12}\selectfont  
+4. Si stimino i **parametri** del modello, definendolo in modo che sia **di tipo ricorsivo**. \newline
+```{r echo=FALSE}
+tmp <- grViz(
+'digraph boxes_and_circles {
+  graph [layout = neato]
+  node [shape = box]
+  x1 [label = <x<SUB>1</SUB>> pos="-2,0!"]
+  y1 [label = <y<SUB>1</SUB>> pos="-1,-1!"]
+  y2 [label = <y<SUB>2</SUB>> pos="0,0!"]
+  x2 [label = <x<SUB>2</SUB>> pos="2,0!"]
+  y3 [label = <y<SUB>2</SUB>> pos="3,-1!"]
+  y4 [label = <y<SUB>3</SUB>> pos="4,0!"]
+  node [shape = plaintext]
+  e1 [label = <&epsilon;> pos="0,-1!"]
+  e2 [label = <&epsilon;>pos="1,0!"]
+  e3 [label = <&epsilon;> pos="4,-1!"]
+  e4 [label = <&epsilon;>pos="5,0!"]
+  # edges
+  x1->y1 [label = Recursive]
+  x1->y2 
+  y1->y2
+  x2->y3 [label = Nonrecursive]
+  x2->y4
+  y3->y4
+  y4->y3
+  e1->y1
+  e2->y2
+  e3->y3
+  e4->y4
+}')
+
+# Convert to SVG, then save as png
+tmp = export_svg(tmp)
+tmp = charToRaw(tmp) # flatten
+rsvg_png(tmp, "img/semr.png") # saved graph as png in current working directory
+```
+```{r , echo = FALSE, out.width = "170px"}
+knitr::include_graphics("img/semr.png")
+```
+
+\fontsize{6.5pt}{12}\selectfont
+5. Si valuti la **signifcatività statistica** dei parametri. Qual'è l'ipotesi nulla sottostante ciascun
+parametro?
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{5.5pt}{12}\selectfont 
+```{r warning=FALSE, message=FALSE}
+library(lavaan)
+fit <- sem(model = m, data = finn)
+parameterestimates(fit)[,1:7]
+```
+
+  \endcol
+\endcols
+
+## SEM: Esercizio 7.2
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+6. Si produca il grafico del modello
+```{r message=FALSE,warning=FALSE ,fig.width=1,fig.height=1}
+library(semPlot); semPaths(fit, sizeMan=15)
+```
+
+\fontsize{6pt}{12}\selectfont  
+7. Si calcolino i seguenti **indici di fit** del modello: RMR, SRMR, R2 e TCD.
+```{r , out.width = "150px"}
+lavInspect(fit, what = "fit")[c("rmr","srmr")]
+lavInspect(fit, what = "rsquare") # R2
+library(ADati); TCD(fit) # TCD = total R2
+```
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont
+8. Si ridefinisca il modello **eliminando** i legami relativi ai **parametri non significativi**.
+```{r ,fig.width=1,fig.height=1}
+m <- 'y1 ~ x1 + x2
+      y2 ~ x3
+      y1 ~~ 0*y2' # covarianza fissata a zero
+fit2 <- sem(m, data = finn)
+semPaths(fit2, sizeMan=15)
+```
+
+\fontsize{6pt}{12}\selectfont
+9. Si stimino i **parametri** del nuovo modello (quanti sono?).
+
+\fontsize{6pt}{12}\selectfont
+10. Si calcolino per questo modello gli stessi **indici di fit** già calcolati al punto 7 valutando se sia migliore del precedente.
+
+  \endcol
+\endcols
+
+## SEM: Esercizio 7.2
+
+\begincols
+  \begincol{.5\textwidth}
+
+\fontsize{5pt}{12}\selectfont  
+```{r }
+# modello 1 (più complesso: 15 par)
+parameterestimates(fit)[c(1:6,9),1:7]
+# modello 2 (più parsimonioso: 11 par)
+parameterestimates(fit2)[1:4,1:7]
+```
+
+  \endcol
+\begincol{.5\textwidth}
+
+\fontsize{6pt}{12}\selectfont  
+```{r , out.width = "150px"}
+lavInspect(fit2, what = "fit")[c("rmr","srmr")]
+lavInspect(fit2, what = "rsquare") # R2
+TCD(fit2) # TCD = total R2
+
+# AIC
+cbind(AIC(fit,fit2),BIC(fit,fit2)[,2])
+```
+
+  \endcol
+\endcols
+
+## Esercizi
+
+\begincols
+  \begincol{.48\textwidth}
+
+\fontsize{7.5pt}{12}\selectfont
+**Regressione lineare multilivello**
+
+6.2 (grafici, ANOVA ed effetti random)**
+
+6.9 (esplorative, Bayes Factor, eff. random)**
+
+6.11 (grafici, descrittive, lm e lmer)** \newline
+
+**Regressione lineare multivariata**
+
+7.1 (modelli e parametri)**
+
+7.6 (modelli ricorsivi e non ricorsivi)**
+
+7.20 (full SEM + analisi multigruppo)*
+
+  \endcol
+\begincol{.53\textwidth}
+
+\fontsize{6pt}{12}\selectfont
+*Per scaricare il pacchetto `ADati` del prof. Pastore:
+```{r eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("https://github.com/masspastore/ADati")
+library(ADati)
+```
+
+*Per caricare un dataset dal pacchetto `ADati`:
+```{r eval=FALSE}
+data(gambling, # nome del dataset
+     package = "ADati")
+```
+
+**I dataset sono inclusi nella cartella `dati.esercizi.zip` su Moodle
+(`ADcom2122` > `Materiale didattico` > `MateRiale eseRcizi`), ma si possono scaricare
+anche da \color{blue}github.com/Luca-Menghini/eseRcitazioni/tree/main/data \color{black}
+
+  \endcol
+\endcols
 
 # Risorse
 
