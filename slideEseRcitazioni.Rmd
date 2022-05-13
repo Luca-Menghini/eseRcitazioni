@@ -1722,8 +1722,8 @@ library(lme4) # -> funzione lmer()
 # intercetta random: (1|group)
 m <- lmer(y ~ time + condition + (1|group), 
           data = sherifdat)
-# intercetta & pendenza random: (condition|group)
-m2 <- lmer(y ~ time + condition + (condition|group), 
+# intercetta & pendenza random: (time|group)
+m2 <- lmer(y ~ time + condition + (time|group), 
            data = sherifdat)
 round(summary(m2)$coefficients, 2)
 ```
